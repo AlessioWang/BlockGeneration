@@ -1,10 +1,7 @@
 package Block;
 
 import processing.core.PApplet;
-import wblut.geom.WB_GeometryFactory;
-import wblut.geom.WB_Point;
-import wblut.geom.WB_PolyLine;
-import wblut.geom.WB_Polygon;
+import wblut.geom.*;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -19,26 +16,32 @@ public class Main extends PApplet {
         PApplet.main("Block.Main");
     }
 
+    //基础参数，定义地块以及基本渲染器
     Boundary boundary;
-    List<WB_Point>allPoint;
+    List<WB_Point> allPoint = new ArrayList<>();
     WB_Polygon polygonBoundary = new WB_Polygon();
-    WB_Point p1;
-    WB_Point p2;
-    WB_Point p3;
-    WB_Point p4;
+    WB_Point p1, p2,p3,p4;
     WB_Render wb_render;
     List<Display> things = new ArrayList<>();
+
+    // 影响入口的影响点以及塔楼的影响点
+    WB_Point entrancePoint = new WB_Point(0, 200);
+    WB_Point towerPoint = new WB_Point(0, 0);
+
+    //裙楼参数
     List<WB_Polygon> buffer = new ArrayList<>();
-    WB_GeometryFactory gf = new WB_GeometryFactory();
     Buildings buildings;
-    int bufferDistance = 20;  //控制线，红线向内部buffer的距离
+    double bufferDistance = 20;  //退线距离
     WB_PolyLine controlLine;
     List<WB_Point> boundaryControlPoints = new ArrayList<>();
-    WB_Point pt = new WB_Point(0, 200);
     WB_PolyLine podiumBuildingBoundary;
-    double podWidth = 60;
+    double podWidth = 70;
     List<WB_Point> podBuildingControlPoints = new ArrayList<>();
+    WB_Polygon podWB_Polygon = new WB_Polygon();
 
+    // 塔楼参数
+    double rad = 35;
+    WB_Circle towerCircleBoundary = new WB_Circle();
 
     public void settings() {
         size(500, 500, P3D);
@@ -52,34 +55,31 @@ public class Main extends PApplet {
         p3 = new WB_Point(200, 470);
         p4 = new WB_Point(400, 100);
         boundary = new Boundary(p1, p2, p3, p4);
-        allPoint = new ArrayList<>();
+        double realBufferDistance = podWidth * 0.5 + bufferDistance;
         things.add(boundary);
         polygonBoundary = boundary.boundary2WB_Polygon();
-//        //初始化buildings
-//        buildings = new Buildings(polygonBoundary, bufferDistance, removeIndex);
-//        buffer = buildings.createBuffer(bufferDistance);
-//        controlLine = buildings.createControlLine(buffer);
-//        controlPoints = buildings.getControlPoints(controlLine);
-//        System.out.println("num of controlPoint :" + controlPoints.size());
-////        things.add((Display) controlLine);
-////        buffer = gf.createBufferedPolygons(polygonBoundary, -50);
-
-        //用点的距离来初始化buildings
-        buildings = new Buildings(polygonBoundary, bufferDistance, podWidth);
-        buffer = buildings.createBuffer(bufferDistance);
-
+        buildings = new Buildings(polygonBoundary, realBufferDistance, podWidth);
+        //获得最原始的裙楼退线
+        buffer = buildings.createBuffer(realBufferDistance);
     }
 
     public void draw() {
-        controlLine = buildings.createControlLineInfluncedByPoint(buffer, pt);
+        //获得建筑的控制线（外边缘线）
+        controlLine = buildings.createControlLineInfluncedByPoint(buffer, entrancePoint);
+        //创建双向buffer的pod基础线
+        podWB_Polygon = buildings.getPodiumBuilding(podWidth / 2);
+        //裙楼退线的控制点
         boundaryControlPoints = buildings.getControlPoints(controlLine);
-        podiumBuildingBoundary = buildings.createPodPolyline(pt, podWidth);
-        podBuildingControlPoints = buildings.getControlPoints(podiumBuildingBoundary);
+        towerCircleBoundary = buildings.getCircleTower(rad, towerPoint);
+
+        //渲染方法
         background(255);
         drawBoundary();
         drawControlLineAndPoint(); //渲染控制线和点
         drawPt();
-        drawPodBoundary();
+        drawPod();
+        drawTower();
+//        drawPodBoundary();
     }
 
     //------------------------------------------------------------------------
@@ -96,9 +96,10 @@ public class Main extends PApplet {
 
     public void drawControlLineAndPoint() {
         pushStyle();
-        fill(0, 0, 255);
+        noFill();
+        stroke(0, 0, 255);
         wb_render.drawPolyLine(controlLine);
-        allPoint.addAll( boundaryControlPoints);
+        allPoint.addAll(boundaryControlPoints);
         allPoint.addAll(podBuildingControlPoints);
         for (WB_Point p : allPoint) {
             wb_render.drawPoint(p, 10);
@@ -110,20 +111,38 @@ public class Main extends PApplet {
         pushStyle();
         noStroke();
         fill(0, 255, 0);
-        ellipse(pt.xf(), pt.yf(), 10, 10);
+        ellipse(entrancePoint.xf(), entrancePoint.yf(), 10, 10);
+        fill(150, 150, 0);
+        ellipse(towerPoint.xf(), towerPoint.yf(), 10, 10);
         popStyle();
     }
 
-    public void drawPodBoundary() {
+    public void drawPod() {
         pushStyle();
-        noFill();
-        stroke(0, 0, 150);
-        wb_render.drawPolylineEdges(podiumBuildingBoundary);
+        fill(10, 100, 150);
+        wb_render.drawPolygonEdges(podWB_Polygon);
         popStyle();
     }
+
+    public void drawTower() {
+        pushStyle();
+        fill(0, 150, 150);
+        wb_render.drawCircle(towerCircleBoundary);
+        popStyle();
+    }
+
 
     public void mousePressed() {
-        pt = new WB_Point(mouseX, mouseY);
+        if (keyPressed && key == '1') {
+            entrancePoint = new WB_Point(mouseX, mouseY);
+        }
+        if (keyPressed && key == '2') {
+            towerPoint = new WB_Point(mouseX, mouseY);
+        }
+        if (keyPressed && key == '3') {
+            boundary.addPointByClick();
+        }
+
     }
 
 }

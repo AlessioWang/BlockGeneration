@@ -2,6 +2,8 @@ package Block;
 
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import processing.core.PApplet;
 import wblut.geom.*;
@@ -25,12 +27,11 @@ public class Buildings implements Display {
     List<WB_Polygon> buffer;
     WB_GeometryFactory gf;
     WB_Point influencePt;
-    WB_Polygon podiumBuildingBoundary;
     List<LineString> mergedLineStrings;
     double podWidth;
     WB_Point pt;
 
-    public Buildings(WB_Polygon boundary, int distance, double inputPodWidth) {
+    public Buildings(WB_Polygon boundary, double distance, double inputPodWidth) {
         mergedLineStrings = new ArrayList<>();
         influencePt = new WB_Point();
         gf = new WB_GeometryFactory();
@@ -44,59 +45,12 @@ public class Buildings implements Display {
         //获得控制点
         controlPoints = new ArrayList<>();
         controlPoints = this.getControlPoints(controlLine);
-
-        System.out.println("chushihua" + mergedLineStrings);
-
-
     }
 
     public List<WB_Polygon> createBuffer(double distance) {
         buffer = gf.createBufferedPolygons(redLine, distance * (-1));
         return buffer;
     }
-
-//    //取所有的首点与最后一个的末点
-//    public WB_PolyLine createControlLine(List<WB_Polygon> buffer) {
-//        WB_Polygon bufferSeparate = buffer.get(0);
-//        List<WB_Segment> segments = bufferSeparate.toSegments();
-//        List<WB_Coord> nodeList = new ArrayList<>();
-//        segments.remove(lineIndex);
-//        for (WB_Segment segment : segments) {
-//            WB_Coord node = segment.getEndpoint();
-//            nodeList.add(node);
-//        }
-//        //添加起始点
-//        nodeList.add(segments.get(0).getOrigin());
-//        //以点集创建polyLine作为controlLine
-//        return new WB_PolyLine(nodeList);
-//    }
-
-//    public WB_PolyLine createControlLine(List<WB_Polygon> buffer) {
-//        WB_Polygon bufferSeparate = buffer.get(0);
-//        List<WB_Segment> segments = bufferSeparate.toSegments();
-//        List<WB_Coord> nodeList = new ArrayList<>();
-//        segments.remove(lineIndex);
-//        for (WB_Segment segment : segments) {
-//            WB_Coord node1 = segment.getOrigin();
-//            nodeList.add(node1);
-//            WB_Coord node2 = segment.getEndpoint();
-//            nodeList.add(node2);
-//        }
-//        List<WB_Coord> pureNodeList = removeRepeatingCoord(nodeList);
-//        return new WB_PolyLine(pureNodeList);
-//    }
-
-    public List<WB_Coord> removeRepeatingCoord(List<WB_Coord> coords) {
-        for (int i = 0; i < coords.size() - 1; i++) {
-            for (int j = 1; j < coords.size() - 1; j++) {
-                if (coords.get(j).equals(coords.get(i))) {
-                    coords.remove(j);
-                }
-            }
-        }
-        return coords;
-    }
-
 
     public List<WB_Point> getControlPoints(WB_PolyLine controlLine) {
         WB_CoordCollection pts = controlLine.getPoints();
@@ -127,6 +81,7 @@ public class Buildings implements Display {
         return segments;
     }
 
+    //Jts与Hemesh转化工具
     public static LineString WB_SegmentToJtsLineString(final WB_Segment seg) {
         Coordinate[] coords = new Coordinate[2];
         coords[0] = new Coordinate(seg.getOrigin().xd(), seg.getOrigin().yd(), seg.getOrigin().zd());
@@ -140,6 +95,14 @@ public class Buildings implements Display {
             points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
         }
         return new WB_PolyLine(points);
+    }
+
+    public static WB_Polygon JtsPolygonToWB_Polygon(final Polygon p) {
+        WB_Coord[] points = new WB_Point[p.getNumPoints()];
+        for (int i = 0; i < p.getNumPoints(); i++) {
+            points[i] = new WB_Point(p.getCoordinates()[i].x, p.getCoordinates()[i].y, p.getCoordinates()[i].z);
+        }
+        return new WB_Polygon(points).getSimplePolygon();
     }
 
 
@@ -170,7 +133,7 @@ public class Buildings implements Display {
     }
 
     public WB_PolyLine createPodPolyline(WB_Point pt, double width) {
-        List<WB_Polygon> baseLineBuffers = gf.createBufferedPolygons(buffer, width * (-1),0);
+        List<WB_Polygon> baseLineBuffers = gf.createBufferedPolygons(buffer, width * (-1), 0);
         WB_Polygon baseLineBuffer = baseLineBuffers.get(0);
         List<WB_Segment> segments = baseLineBuffer.toSegments();
         WB_Segment closestSeg = getClosestSegment(segments, pt);
@@ -179,19 +142,38 @@ public class Buildings implements Display {
         return PodPolyline.get(0);
     }
 
-//    public WB_Polygon getPodiumBuilding(double width) {
-//        List<LineString> jtsControlLines = new ArrayList<>();
-//        System.out.println("###" + mergedLineStrings.size());
-//        for (Object string : mergedLineStrings) {
-//            jtsControlLines.add((LineString) string);
-//        }
-//        System.out.println(mergedLineStrings.size());
-//        System.out.println(jtsControlLines.size());
-//        LineString jtsControlLine = jtsControlLines.get(0);
-//        Geometry boundary = jtsControlLine.buffer(width);
-//
-////        return JtsLineStringToWB_PolyLine((LineString) boundary);
-//    }
+    //得到基于外部控制线双向buffer的图形，需要进行下一步处理
+    public WB_Polygon getPodiumBuilding(double width) {
+        List<LineString> jtsControlLines = new ArrayList<>();
+        for (Object string : mergedLineStrings) {
+            jtsControlLines.add((LineString) string);
+        }
+        LineString jtsControlLine = jtsControlLines.get(0);
+        BufferOp bufferOp = new BufferOp(jtsControlLine);
+        bufferOp.setEndCapStyle(BufferParameters.CAP_FLAT);
+        bufferOp.setQuadrantSegments(-2);
+        Geometry buttBuffer = bufferOp.getResultGeometry(width);
+        return JtsPolygonToWB_Polygon((Polygon) buttBuffer);
+    }
+
+    public WB_Circle getCircleTower(double rad, WB_Point pt) {
+        WB_Point p = getClosestP2P(this.controlPoints,pt);
+        return new WB_Circle(p,rad);
+    }
+
+    public WB_Point getClosestP2P(List<WB_Point> pts, WB_Point pt){
+        WB_Point chosenPt = new WB_Point();
+        double d = Integer.MAX_VALUE;
+        for(WB_Point p : pts){
+            double dis = pt.getDistance2D(p);
+            if(d>dis){
+                d= dis;
+                chosenPt = p;
+            }
+        }
+        return chosenPt;
+    }
+
 
     public void drawPolygon(WB_Polygon polygon) {
         buildingRender.drawPolygonEdges2D(polygon);
