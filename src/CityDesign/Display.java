@@ -1,7 +1,4 @@
-package Block;
-
-import processing.core.PApplet;
-import wblut.processing.WB_Render;
+package CityDesign;
 
 /**
  * @auther Alessio

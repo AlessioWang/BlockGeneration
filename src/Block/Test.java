@@ -31,7 +31,7 @@ public class Test extends PApplet {
     }
 
     public void draw() {
-            boundary.display(this);
+            boundary.display();
     }
 
     public void mousePressed(){

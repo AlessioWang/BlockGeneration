@@ -35,7 +35,8 @@ public class Boundary implements Display {
     }
 
     public Boundary(List<WB_Point> points, PApplet applet) {
-        pointList = new ArrayList<>();
+        wb_render = new WB_Render(applet);
+        pointList = points;
         this.app = applet;
         boundary = new WB_Polygon(points);
     }
@@ -58,17 +59,12 @@ public class Boundary implements Display {
 
 
     @Override
-    public void display(WB_Render render) {
-        this.wb_render = render;
-        drawBoundary(boundary);
-    }
-
-    @Override
-    public void display(PApplet applet) {
-        if (wb_render == null) {
-            wb_render = new WB_Render(applet);
-        }
+    public void display() {
+        app.pushStyle();
+        app.noFill();
+        app.stroke(255,0,0);
+        app.strokeWeight(3);
         wb_render.drawPolygonEdges(this.boundary);
-
+        app.popStyle();
     }
 }

@@ -36,12 +36,13 @@ public class Buildings implements Display {
         influencePt = new WB_Point();
         gf = new WB_GeometryFactory();
         jtsGf = new GeometryFactory();
+        redLine = new WB_Polygon();
         this.redLine = boundary;
         this.podWidth = inputPodWidth;
 //        this.lineIndex = index;
         buffer = new ArrayList<>();
         buffer = this.createBuffer(distance);
-        controlLine = this.createControlLineInfluncedByPoint(buffer, influencePt);
+        controlLine = this.createControlLineInfluencedByPoint(buffer, influencePt);
         //获得控制点
         controlPoints = new ArrayList<>();
         controlPoints = this.getControlPoints(controlLine);
@@ -123,7 +124,7 @@ public class Buildings implements Display {
         return polyLines;
     }
 
-    public WB_PolyLine createControlLineInfluncedByPoint(List<WB_Polygon> buffer, WB_Point pt) {
+    public WB_PolyLine createControlLineInfluencedByPoint(List<WB_Polygon> buffer, WB_Point pt) {
         WB_Polygon bufferSingle = buffer.get(0);
         List<WB_Segment> segments = bufferSingle.toSegments();
         WB_Segment closestSeg = getClosestSegment(segments, pt);
@@ -151,23 +152,48 @@ public class Buildings implements Display {
         LineString jtsControlLine = jtsControlLines.get(0);
         BufferOp bufferOp = new BufferOp(jtsControlLine);
         bufferOp.setEndCapStyle(BufferParameters.CAP_FLAT);
-        bufferOp.setQuadrantSegments(-2);
+        bufferOp.setQuadrantSegments(-1);
         Geometry buttBuffer = bufferOp.getResultGeometry(width);
         return JtsPolygonToWB_Polygon((Polygon) buttBuffer);
     }
 
-    public WB_Circle getCircleTower(double rad, WB_Point pt) {
-        WB_Point p = getClosestP2P(this.controlPoints,pt);
-        return new WB_Circle(p,rad);
+    public Double getSegAngle(WB_Segment seg1, WB_Segment seg2) {
+        WB_Coord dir1 = seg1.getDirection();
+        WB_Coord dir2 = seg2.getDirection();
+        return WB_GeometryOp.getDihedralAngle(dir1, dir2);
     }
 
-    public WB_Point getClosestP2P(List<WB_Point> pts, WB_Point pt){
+
+    public List<Double> getAnglesOfPolyline(WB_Polygon polygon) {
+        List<WB_Segment> segments = polygon.toSegments();
+        List<Double> angles = new ArrayList<>();
+        for (int i = 0; i < segments.size(); i++) {
+            WB_Segment seg1 = segments.get(i);
+            WB_Segment seg2 = segments.get((i + 1) % segments.size());
+            double angle = getSegAngle(seg1, seg2);
+            angles.add(angle);
+        }
+        return angles;
+    }
+
+    public int chooseEdgeStyle(double max) {
+        int style = 1;
+        List<Double> angles = new ArrayList<>();
+        return style;
+    }
+
+    public WB_Circle getCircleTower(double rad, WB_Point pt) {
+        WB_Point p = getClosestP2P(this.controlPoints, pt);
+        return new WB_Circle(p, rad);
+    }
+
+    public WB_Point getClosestP2P(List<WB_Point> pts, WB_Point pt) {
         WB_Point chosenPt = new WB_Point();
         double d = Integer.MAX_VALUE;
-        for(WB_Point p : pts){
+        for (WB_Point p : pts) {
             double dis = pt.getDistance2D(p);
-            if(d>dis){
-                d= dis;
+            if (d > dis) {
+                d = dis;
                 chosenPt = p;
             }
         }
@@ -196,17 +222,17 @@ public class Buildings implements Display {
         applet.popStyle();
     }
 
-    @Override
-    public void display(WB_Render render) {
-//        this.buildingRender = render;
-//        drawPolyline(controlLine);                //画控制线
-//        for (WB_Point p : controlPoints) {        //画控制点
-//            drawPoint(p);
-//        }
-    }
+//    @Override
+//    public void display(WB_Render render) {
+////        this.buildingRender = render;
+////        drawPolyline(controlLine);                //画控制线
+////        for (WB_Point p : controlPoints) {        //画控制点
+////            drawPoint(p);
+////        }
+//    }
 
     @Override
-    public void display(PApplet applet) {
+    public void display() {
 //        for (WB_Point p : controlPoints) {
 //            drawCircle(applet, p,10);
 //        }

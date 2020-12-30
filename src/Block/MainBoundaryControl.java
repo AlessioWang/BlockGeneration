@@ -1,7 +1,10 @@
 package Block;
 
 import processing.core.PApplet;
-import wblut.geom.*;
+import wblut.geom.WB_Circle;
+import wblut.geom.WB_Point;
+import wblut.geom.WB_PolyLine;
+import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -9,11 +12,11 @@ import java.util.List;
 
 /**
  * @auther Alessio
- * @date 2020/11/12
+ * @date 2020/11/20
  **/
-public class Main extends PApplet {
+public class MainBoundaryControl extends PApplet {
     public static void main(String[] args) {
-        PApplet.main("Block.Main");
+        PApplet.main("Block.MainBoundaryControl");
     }
 
     //基础参数，定义地块以及基本渲染器
@@ -23,7 +26,7 @@ public class Main extends PApplet {
     WB_Point p1, p2, p3, p4;
     WB_Render wb_render;
     List<Display> things = new ArrayList<>();
-    List<WB_Point> pointList = new ArrayList<>();
+    List<WB_Point> points = new ArrayList<>();
 
     // 影响入口的影响点以及塔楼的影响点
     WB_Point entrancePoint = new WB_Point(0, 200);
@@ -32,69 +35,58 @@ public class Main extends PApplet {
     //裙楼参数
     List<WB_Polygon> buffer = new ArrayList<>();
     Buildings buildings;
-    double bufferDistance = 20;  //退线距离
+    double bufferDistance = 40;  //退线距离
     WB_PolyLine controlLine;
     List<WB_Point> boundaryControlPoints = new ArrayList<>();
     WB_PolyLine podiumBuildingBoundary;
-    double podWidth = 70;
+    double podWidth = 150;
     List<WB_Point> podBuildingControlPoints = new ArrayList<>();
     WB_Polygon podWB_Polygon = new WB_Polygon();
 
     // 塔楼参数
-    double rad = 35;
+    double rad = 75;
     WB_Circle towerCircleBoundary = new WB_Circle();
 
     public void settings() {
-        size(500, 500, P3D);
+        size(800, 800, P3D);
         smooth(5);
     }
 
     public void setup() {
         wb_render = new WB_Render(this);
-        p1 = new WB_Point(50, 50);
-        p2 = new WB_Point(50, 400);
-        p3 = new WB_Point(200, 470);
-        p4 = new WB_Point(400, 100);
-        boundary = new Boundary(p1, p2, p3, p4);
-//        boundary = new Boundary(pointList, this);
-        double realBufferDistance = podWidth * 0.5 + bufferDistance;
-        things.add(boundary);
-        polygonBoundary = boundary.boundary2WB_Polygon();
-        buildings = new Buildings(polygonBoundary, realBufferDistance, podWidth);
-        //获得最原始的裙楼退线
-        buffer = buildings.createBuffer(realBufferDistance);
+        boundary = new Boundary(points, this);
     }
 
     public void draw() {
-        //获得建筑的控制线（外边缘线）
-        controlLine = buildings.createControlLineInfluencedByPoint(buffer, entrancePoint);
-        //创建双向buffer的pod基础线
-        podWB_Polygon = buildings.getPodiumBuilding(podWidth / 2);
-        //裙楼退线的控制点
-        boundaryControlPoints = buildings.getControlPoints(controlLine);
-        towerCircleBoundary = buildings.getCircleTower(rad, towerPoint);
+        if (boundary.pointList.size() >= 3) {
+            boundary = new Boundary(boundary.pointList,this);
+            double realBufferDistance = podWidth * 0.5 + bufferDistance;
+            things.add(boundary);
+            polygonBoundary = boundary.boundary2WB_Polygon();
+            buildings = new Buildings(polygonBoundary, realBufferDistance, podWidth);
+            //获得最原始的裙楼退线
+            buffer = buildings.createBuffer(realBufferDistance);
+            //获得建筑的控制线（外边缘线）
+            controlLine = buildings.createControlLineInfluencedByPoint(buffer, entrancePoint);
+            //创建双向buffer的pod基础线
+            podWB_Polygon = buildings.getPodiumBuilding(podWidth / 2);
+            //裙楼退线的控制点
+            boundaryControlPoints = buildings.getControlPoints(controlLine);
+            towerCircleBoundary = buildings.getCircleTower(rad, towerPoint);
 
-        //渲染方法
-        background(255);
-//        drawBoundary();
-        drawControlLineAndPoint(); //渲染控制线和点
-        drawPt();
-        drawPod();
-        drawTower();
+            //渲染方法
+            background(255);
+//            drawBoundary();
+            drawControlLineAndPoint(); //渲染控制线和点
+            drawPt();
+            drawPod();
+            drawTower();
+            boundary.display();
 //        drawPodBoundary();
+        }
+
     }
 
-    //------------------------------------------------------------------------
-//    public void drawBoundary() {
-//        //画地块边界
-//        pushStyle();
-//        stroke(255, 0, 0);
-//        strokeWeight(3);
-//        for (Display d : things) {
-//            d.display(wb_render);
-//        }
-//        popStyle();
-//    }
 
     public void drawControlLineAndPoint() {
         pushStyle();
@@ -135,6 +127,7 @@ public class Main extends PApplet {
 
 
     public void mousePressed() {
+
         if (keyPressed && key == '1') {
             entrancePoint = new WB_Point(mouseX, mouseY);
         }
@@ -146,5 +139,4 @@ public class Main extends PApplet {
         }
 
     }
-
 }
