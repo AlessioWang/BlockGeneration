@@ -33,7 +33,7 @@ public class ResidenceTest extends PApplet {
         state = cam.getState();
         points = BlockBoundary.set1000BoundaryPoint();
         boundary = new BlockBoundary(points,this);
-        residence = new Residence(boundary.outline,100,400,170,1,30,100,6,this);
+        residence = new Residence(boundary.outline,100,600,170,1,30,100,6,this);
 //        System.out.println(residence.calculateControlNum());
 //        System.out.println(residence.calculateGapDis());
 //        System.out.println(residence.getGapDis2());
@@ -41,6 +41,7 @@ public class ResidenceTest extends PApplet {
 //        System.out.println("Dis: " + residence.realWidthDis(residence.controlLines.get(0)));
 //        System.out.println("Num : " + residence.calculateBuildNumIn1Line(residence.controlLines.get(0)));
 //        System.out.println("lineNum : " + residence.getPolylineListFromNum(residence.controlLines.get(0)).size());
+        System.out.println("norMun : " + residence.norBuildings.size());
     }
 
     public void draw(){

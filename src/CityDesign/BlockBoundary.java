@@ -75,8 +75,8 @@ public class BlockBoundary implements Display {
     public static List<WB_Point> set1000BoundaryPoint(){
         WB_Point p1 = new WB_Point(50, 50);
         WB_Point p2 = new WB_Point(50, 2000);
-        WB_Point p3 = new WB_Point(2500, 2500);
-        WB_Point p4 = new WB_Point(2000, -100);
+        WB_Point p3 = new WB_Point(2000, 3500);
+        WB_Point p4 = new WB_Point(3500, -100);
         List<WB_Point> list = new ArrayList<>();
         list.add(p1);
         list.add(p2);

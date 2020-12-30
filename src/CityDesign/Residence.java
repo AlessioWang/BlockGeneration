@@ -29,7 +29,7 @@ public class Residence implements Display {
     double wholeHeight;
     double buildingGap;
     double widthDis;        //横向之间的楼间距
-    double angleTol = 20;   //转变摆放方式的角度阈值
+    double angleTol = Math.PI*0.05;   //转变摆放方式的角度阈值
     WB_PolyLine controlLineNorth;
     WB_PolyLine controlLineSouth;
     List<WB_PolyLine> controlLines;
@@ -42,7 +42,7 @@ public class Residence implements Display {
     List<WB_Polygon> rotateBuildings;
     List<WB_Polygon> norBuildings;
     List<List<WB_Polygon>> buildingsList;
-    List<WB_Polygon> allBuildings;
+    List<List<WB_Polygon>> allBuildings;
 
 
     public Residence
@@ -66,11 +66,12 @@ public class Residence implements Display {
         this.controlLines = getControlLinesList();
         this.ctrlLineNum = calculateControlNum() + 2;
         this.divCtrlLineCollection = getDivCtrlLineCollection(this.controlLines);
+        rotateBuildingCtrlLine = new ArrayList<>();
+        normalBuildingCtrlLine = new ArrayList<>();
         this.sepDivLine = sepBuildingType(this.divCtrlLineCollection);
-        this.buildingsList = getAllBuildings();
-        this.norBuildings = getAllNorBuildings(normalBuildingCtrlLine);
-//        this.allBuildings = takeAllBuildings();
-
+        this.norBuildings = getAllNorBuildings();
+        this.rotateBuildings = getRotateBuildings();
+        this.allBuildings = getAllBuildings();
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -258,17 +259,13 @@ public class Residence implements Display {
         return rawBuilding;
     }
 
-    public List<List<WB_Polygon>> getAllBuildings() {
-        List<WB_Polygon> oneLineBuildings = new ArrayList<>();
-        List<List<WB_Polygon>> allBuildings = new ArrayList<>();
-        for (List<WB_PolyLine> polyLines : divCtrlLineCollection) {
-            for (WB_PolyLine polyLine : polyLines) {
-                WB_Polygon building = getRotatedBuilding(polyLine, buildWidth, buildDepth);
-                oneLineBuildings.add(building);
-            }
-            allBuildings.add(oneLineBuildings);
+    public List<WB_Polygon> getRotateBuildings() {
+        List<WB_Polygon> rotateBuildings = new ArrayList<>();
+        for (WB_PolyLine polyLine : rotateBuildingCtrlLine) {
+            WB_Polygon building = getRotatedBuilding(polyLine, buildWidth, buildDepth);
+            rotateBuildings.add(building);
         }
-        return allBuildings;
+        return rotateBuildings;
     }
 
     private List<WB_Polygon> takeAllBuildings() {
@@ -281,15 +278,15 @@ public class Residence implements Display {
 
     public WB_Polygon getNorBuilding(WB_Point pt, double width, double depth) {
         WB_Vector v = new WB_Vector(0, depth);
-        WB_Point p = pt.add(v);
+        WB_Point p = pt.sub(v.mul(0.5));
         return new WB_Polygon(W_Tools.getPolygon(p, width, depth));
     }
 
-    public List<WB_Polygon> getAllNorBuildings (List<WB_PolyLine> lines){
+    public List<WB_Polygon> getAllNorBuildings() {
         List<WB_Polygon> norBuildings = new ArrayList<>();
-        for (WB_PolyLine l : lines){
+        for (WB_PolyLine l : normalBuildingCtrlLine) {
             WB_Point p = l.getPoint(0);
-            WB_Polygon building = getNorBuilding(p,buildWidth,buildDepth);
+            WB_Polygon building = getNorBuilding(p, buildWidth, buildDepth);
             norBuildings.add(building);
         }
         return norBuildings;
@@ -317,10 +314,19 @@ public class Residence implements Display {
         return allB;
     }
 
-//    public List<List<WB_Polygon>> getAllBuildings(List<List<WB_PolyLine>> ctrlLines){
-//        List<WB_PolyLine> rotateL = new ArrayList<>();
-//        List<WB_PolyLine> norB = new ArrayList<>();
-//    }
+    public List<List<WB_Polygon>> getAllBuildings() {
+        List<List<WB_Polygon>> all = new ArrayList<>();
+        all.add(rotateBuildings);
+        all.add(norBuildings);
+        return all;
+    }
+
+//    public List<WB_Polygon>(){}
+
+
+
+
+
 
     @Override
     public void display() {
@@ -343,8 +349,10 @@ public class Residence implements Display {
         //画建筑
         app.noFill();
         app.stroke(0, 0, 50, 50);
-        for (WB_Polygon p : allBuildings) {
-            wb_render.drawPolygonEdges(p);
+        for (List<WB_Polygon> ps : allBuildings) {
+            for (WB_Polygon p : ps) {
+                wb_render.drawPolygonEdges(p);
+            }
         }
         app.popStyle();
     }
