@@ -17,7 +17,6 @@ public class Residence implements Display {
     WB_Render wb_render;
     PApplet app;
     WB_GeometryFactory gf;
-
     WB_Polygon boundary;
     WB_Polygon redLine;
     double redLineDis;
@@ -41,8 +40,11 @@ public class Residence implements Display {
     List<List<WB_PolyLine>> sepDivLine;
     List<WB_Polygon> rotateBuildings;
     List<WB_Polygon> norBuildings;
-    List<List<WB_Polygon>> buildingsList;
-    List<List<WB_Polygon>> allBuildings;
+    List<WB_Polygon> allBuildingBoundarys;
+    //    List<List<WB_Polygon>> buildingsList;
+    //    List<List<WB_Point>> interPsList ;
+    List<ResidenceBuilding> residenceBuildings;
+
 
 
     public Residence
@@ -71,7 +73,9 @@ public class Residence implements Display {
         this.sepDivLine = sepBuildingType(this.divCtrlLineCollection);
         this.norBuildings = getAllNorBuildings();
         this.rotateBuildings = getRotateBuildings();
-        this.allBuildings = getAllBuildings();
+        this.allBuildingBoundarys = getAllBuildingBoundarys();
+//        interPsList = new ArrayList<>();
+        residenceBuildings = initialResidenceBuildings();
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -250,9 +254,6 @@ public class Residence implements Display {
     public WB_Polygon getRotatedBuilding(WB_PolyLine controlLine, double width, double depth) {
         double angle = getRotateAngle(controlLine);
         WB_Polygon rawBuilding = W_Tools.getPolygon(getCtrlPoint(controlLine), width, depth);
-//        WB_Transform3D transform3D = new WB_Transform3D();
-//        transform3D.addRotateAboutOrigin(angle,getCtrlPoint(controlLine));
-//        rawBuilding.applySelf(transform3D);
         WB_Transform2D transform2D = new WB_Transform2D();
         transform2D.addRotateAboutPoint(angle, controlLine.getPoint(0));
         rawBuilding.apply2DSelf(transform2D);
@@ -268,13 +269,6 @@ public class Residence implements Display {
         return rotateBuildings;
     }
 
-    private List<WB_Polygon> takeAllBuildings() {
-        List<WB_Polygon> build = new ArrayList<>();
-        for (List<WB_Polygon> b1 : buildingsList) {
-            build.addAll(b1);
-        }
-        return build;
-    }
 
     public WB_Polygon getNorBuilding(WB_Point pt, double width, double depth) {
         WB_Vector v = new WB_Vector(0, depth);
@@ -314,15 +308,47 @@ public class Residence implements Display {
         return allB;
     }
 
-    public List<List<WB_Polygon>> getAllBuildings() {
-        List<List<WB_Polygon>> all = new ArrayList<>();
-        all.add(rotateBuildings);
-        all.add(norBuildings);
+    public List<WB_Polygon> getAllBuildingBoundarys() {
+        List<WB_Polygon> all = new ArrayList<>();
+        all.addAll(rotateBuildings);
+        all.addAll(norBuildings);
         return all;
     }
 
-//    public List<WB_Polygon>(){}
+    public List<WB_Polygon> selInterSecBuildings(List<List<WB_Polygon>> allBuildings){
+        List<WB_Polygon> selBuildings = new ArrayList<>();
+        List<List<WB_Point>> interPsList = new ArrayList<>();
+        List<WB_Polygon> buildings = new ArrayList<>();
+        for(List<WB_Polygon> bs : allBuildings){
+            buildings.addAll(bs);
+        }
+        for (WB_Polygon bui : buildings){
+            List<WB_Segment> segs = bui.toSegments();
+            List<WB_Segment> redSegs = redLine.toSegments();
+            List<WB_Point> interPs = new ArrayList<>();
+            for(WB_Segment seg : segs){
+                for(WB_Segment reSeg: redSegs){
+                    WB_IntersectionResult interP =  WB_GeometryOp.getIntersection2D(seg,reSeg);
+                    WB_Point p = (WB_Point) interP.getObject();
+                    interPs.add(p);
+                }
+            }
+            if(interPs != null){
+                selBuildings.add(bui);
+                interPsList.add(interPs);
+            }
+        }
+        return selBuildings;
+    }
 
+    public List<ResidenceBuilding> initialResidenceBuildings(){
+        List<ResidenceBuilding> residenceBuildingList = new ArrayList<>();
+        for(int i = 0; i<this.allBuildingBoundarys.size(); i++){
+            ResidenceBuilding building = new ResidenceBuilding(i,this.allBuildingBoundarys.get(i),floorNum,floorHeight,redLine,true,app);
+            residenceBuildingList.add(building);
+        }
+        return residenceBuildingList;
+    }
 
 
 
@@ -335,7 +361,7 @@ public class Residence implements Display {
         app.stroke(255, 0, 0);
         app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.redLine);
-        app.stroke(100, 0, 0);
+        app.stroke(100, 0, 0,50);
         //画控制线
         for (WB_PolyLine l : this.controlLines) {
             wb_render.drawPolyLine(l);
@@ -347,12 +373,13 @@ public class Residence implements Display {
             wb_render.drawPoint(p, 10);
         }
         //画建筑
-        app.noFill();
-        app.stroke(0, 0, 50, 50);
-        for (List<WB_Polygon> ps : allBuildings) {
-            for (WB_Polygon p : ps) {
-                wb_render.drawPolygonEdges(p);
-            }
+//        app.noFill();
+//        app.stroke(0, 0, 50, 70);
+//            for (WB_Polygon p : allBuildingBoundarys) {
+//                wb_render.drawPolygonEdges(p);
+//            }
+        for(ResidenceBuilding building:residenceBuildings){
+            building.display();
         }
         app.popStyle();
     }
