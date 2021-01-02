@@ -76,6 +76,8 @@ public class Residence implements Display {
         this.allBuildingBoundarys = getAllBuildingBoundarys();
 //        interPsList = new ArrayList<>();
         residenceBuildings = initialResidenceBuildings();
+        turnIfInRed(residenceBuildings);
+
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -350,6 +352,20 @@ public class Residence implements Display {
         return residenceBuildingList;
     }
 
+    public void turnIfInRed(List<ResidenceBuilding> buildings){
+        for(ResidenceBuilding building: buildings){
+            building.checkBuildingInRedLine();
+        }
+    }
+
+    public void moveBuildings(){
+        List<ResidenceBuilding> outBuildings = new ArrayList<>();
+        for(ResidenceBuilding building:residenceBuildings){
+            if(!building.ifInRedLine){
+                building.buildingMove();
+            }
+        }
+    }
 
 
 

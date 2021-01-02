@@ -39,26 +39,38 @@ public class W_Tools {
     }
 
 
-
     //以基点及长宽画polygon
-    static public WB_Polygon getPolygon(WB_Point pt , double width, double height){
-        WB_Vector vWidth = new WB_Vector(width,0);
-        WB_Vector vHeight = new WB_Vector(0,height);
+    static public WB_Polygon getPolygon(WB_Point pt, double width, double height) {
+        WB_Vector vWidth = new WB_Vector(width, 0);
+        WB_Vector vHeight = new WB_Vector(0, height);
         WB_Point p1 = pt.add(vWidth);
         WB_Point p2 = pt.add(vHeight).add(vWidth);
         WB_Point p3 = pt.add(vHeight);
-        return new WB_Polygon(pt,p1,p2,p3);
+        return new WB_Polygon(pt, p1, p2, p3);
     }
 
     //计算建筑的长宽比
-    static public double getProportion(WB_Polygon polygon){
+    static public double getProportion(WB_Polygon polygon) {
         WB_AABB aabb = polygon.getAABB();
-        return aabb.getWidth()/aabb.getHeight();
+        return aabb.getWidth() / aabb.getHeight();
     }
 
     //p2指向p1的单位向量
-    static public  WB_Vector getUnitVector(WB_Point p1, WB_Point p2){
+    static public WB_Vector getUnitVector(WB_Point p1, WB_Point p2) {
         return p1.sub(p2).div(p1.getDistance(p2));
+    }
+
+    //polygon判断是否相交（相交是false，相交是true）
+    public static boolean checkInRedLine(WB_Polygon a, WB_Polygon b) {
+        List<WB_Segment> as = a.toSegments();
+        List<WB_Segment> bs = b.toSegments();
+        for (WB_Segment s : as) {
+            for (WB_Segment s1 : bs) {
+                if (WB_GeometryOp2D.getIntersection2D(s, s1).intersection)
+                    return false;
+            }
+        }
+        return true;
     }
 
     //Jts与Hemesh转化工具

@@ -5,13 +5,16 @@ import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
+import javax.swing.text.Segment;
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @auther Alessio
  * @date 2020/12/30
  **/
-public class ResidenceBuilding implements Display{
+public class ResidenceBuilding implements Display {
 
     WB_Render wb_render;
     PApplet app;
@@ -21,8 +24,17 @@ public class ResidenceBuilding implements Display{
     int index;
     boolean ifInRedLine;
     WB_Polygon redLine;
+    WB_Point center;
+    WB_Point cp;
+    double step = 1;
+    WB_Vector dir;
+    WB_PolyLine line;
+    WB_Point cpInBuilding;
+    List<WB_Point> interPts;
+    WB_Point midP;
 
-    public ResidenceBuilding(int index, WB_Polygon boundary,double floorNum, double floorHeight,WB_Polygon redLine, boolean ifInRedLine, PApplet applet){
+
+    public ResidenceBuilding(int index, WB_Polygon boundary, double floorNum, double floorHeight, WB_Polygon redLine, boolean ifInRedLine, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         this.index = index;
@@ -31,47 +43,96 @@ public class ResidenceBuilding implements Display{
         this.floorHeight = floorHeight;
         this.ifInRedLine = ifInRedLine;
         this.redLine = redLine;
+        this.interPts = new ArrayList<>();
     }
 
-    public void moveDir(WB_Vector direction, double step){
-        WB_Vector v= direction.div(direction.getLength());
+    public void moveDir(WB_Vector direction, double step) {
+        WB_Vector v = direction.div(direction.getLength());
         WB_Transform2D t = new WB_Transform2D().addTranslate2D(v.mul(step));
         this.boundary.apply2DSelf(t);
     }
 
-    public void moveRandom(double step){
+    public void moveRandom(double step) {
         double random = Math.random();
         WB_Vector v;
-        if(random<0.25){
-            v = new WB_Vector(0,1);
-        }else if(random<0.5 && random >0.25){
-            v = new WB_Vector(0,-1);
-        }else if(random<0.75 && random >0.5){
-            v = new WB_Vector(1,0);
-        }else {
-            v = new WB_Vector(-1,0);
+        if (random < 0.25) {
+            v = new WB_Vector(0, 1);
+        } else if (random < 0.5 && random > 0.25) {
+            v = new WB_Vector(0, -1);
+        } else if (random < 0.75 && random > 0.5) {
+            v = new WB_Vector(1, 0);
+        } else {
+            v = new WB_Vector(-1, 0);
         }
         WB_Transform2D t = new WB_Transform2D().addTranslate2D(v.mul(step));
         this.boundary.apply2DSelf(t);
     }
 
-    public void ifInRedLine(ResidenceBuilding building){
-        WB_Polygon boundary = building.boundary;
-        WB_Point center = boundary.getCenter();
-        WB_Point cp = WB_GeometryOp.getClosestPoint3D(center,redLine);
-        double dis = center.getDistance2D(boundary.getPoint(0));
-        double dis2red = center.getDistance2D(cp);
-        if(dis2red<dis){
-            building.ifInRedLine = false;
+    //找出红线上最接近多边形每个顶点的点
+    public void setCp() {
+        List<WB_Coord> pts = this.boundary.getPoints().toList();   //多边形上的所有顶点
+        WB_Point closeP = new WB_Point();
+        double d = Integer.MAX_VALUE;
+        for (WB_Coord pt : pts) {
+            WB_Point p = WB_GeometryOp2D.getClosestPoint2D(pt, (WB_PolyLine) this.redLine);
+            double dis = p.getDistance2D(pt);
+            if (dis < d) {
+                d = dis;
+                closeP = p;
+            }
+        }
+        this.cp = closeP;
+    }
+
+    public void setCpInBuilding() {
+        cpInBuilding = WB_GeometryOp2D.getClosestPoint2D(this.cp, this.boundary);
+    }
+
+
+    public void setCenter() {
+        this.center = boundary.getCenter();
+    }
+
+    public void checkBuildingInRedLine() {
+        this.ifInRedLine = W_Tools.checkInRedLine(this.boundary, this.redLine);
+    }
+
+    public void setDir() {
+//        this.dir = W_Tools.getUnitVector(center, midP);
+        this.dir = W_Tools.getUnitVector(redLine.getCenter(),center);
+    }
+
+    public void buildingMove() {
+        this.moveDir(dir, step);
+    }
+
+    public void getDirLine() {
+        this.line = new WB_PolyLine(cp, center);
+    }
+
+    public void getInterPts() {
+        interPts.clear();
+        if (!this.ifInRedLine) {
+            List<WB_Segment> buildSegs = this.boundary.toSegments();
+            List<WB_Segment> redLineSegs = this.redLine.toSegments();
+            for (WB_Segment buiSeg : buildSegs) {
+                for (WB_Segment redSeg : redLineSegs) {
+                    WB_IntersectionResult result = WB_GeometryOp2D.getIntersection2D(buiSeg,redSeg);
+                    if(result.intersection) {
+                        WB_Point p = (WB_Point) result.getObject();
+                        interPts.add(p);
+                    }
+                }
+            }
         }
     }
 
-    public void turnIfInRed(List<ResidenceBuilding> buildings){
-        for(ResidenceBuilding building: buildings){
-            ifInRedLine(building);
-        }
+    public void getMidP(){
+        System.out.println(this.interPts.size());
+        WB_Point p1 = this.interPts.get(0);
+        WB_Point p2 = this.interPts.get(interPts.size()-1);
+        this.midP = new WB_Point(((p1.xd()+p2.xd())*0.5),(p1.yd()+p2.yd()*0.5));
     }
-
 
 
 
@@ -80,9 +141,13 @@ public class ResidenceBuilding implements Display{
     public void display() {
         app.pushStyle();
         app.noFill();
-        app.stroke(0, 0, 50,70);
+        app.stroke(0, 0, 50, 70);
         app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.boundary);
+        wb_render.drawPoint(center, 10);
+        app.fill(255, 0, 0);
+        wb_render.drawPoint(cp, 7);
+//        wb_render.drawPolylineEdges(line);
         app.popStyle();
     }
 }

@@ -23,31 +23,39 @@ public class ResidenceTest extends PApplet {
     List<WB_Point> points = new ArrayList<>();
     BlockBoundary boundary;
     Residence residence;
-
-    public void settings(){
-        size(1200,1200, P3D);
+    public void settings() {
+        size(1200, 1200, P3D);
     }
 
-    public void setup(){
-        cam = new PeasyCam(this,1200);
+    public void setup() {
+        cam = new PeasyCam(this, 1200);
         state = cam.getState();
         points = BlockBoundary.set1000BoundaryPoint();
-        boundary = new BlockBoundary(points,this);
-        residence = new Residence(boundary.outline,100,600,170,1,30,100,6,this);
-//        System.out.println(residence.calculateControlNum());
-//        System.out.println(residence.calculateGapDis());
-//        System.out.println(residence.getGapDis2());
-//        System.out.println(residence.ctrlLineNum);
-//        System.out.println("Dis: " + residence.realWidthDis(residence.controlLines.get(0)));
-//        System.out.println("Num : " + residence.calculateBuildNumIn1Line(residence.controlLines.get(0)));
-//        System.out.println("lineNum : " + residence.getPolylineListFromNum(residence.controlLines.get(0)).size());
-        System.out.println("norMun : " + residence.norBuildings.size());
+        boundary = new BlockBoundary(points, this);
+        residence = new Residence
+                (boundary.outline, 100, 600, 170, 1, 30, 100, 6, this);
+        for (ResidenceBuilding r : residence.residenceBuildings) {
+            System.out.println(r.ifInRedLine);
+        }
     }
 
-    public void draw(){
+    public void draw() {
         background(255);
+        for (ResidenceBuilding b : residence.residenceBuildings) {
+            b.checkBuildingInRedLine();
+            b.setCenter();
+            b.setCp();
+            if(!b.ifInRedLine) {
+                b.getInterPts();
+                b.getMidP();
+                b.setDir();
+                b.getDirLine();
+            }
+        }
+        residence.moveBuildings();
         residence.display();
         boundary.display();
     }
+
 
 }
