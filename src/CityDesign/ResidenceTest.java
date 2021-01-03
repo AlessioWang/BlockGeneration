@@ -50,6 +50,8 @@ public class ResidenceTest extends PApplet {
                 b.getDirLine();
             }
         }
+        residence.creatPolygonWithHoles();
+        residence.initialGreen();
         residence.moveBuildings();
         residence.display();
         boundary.display();

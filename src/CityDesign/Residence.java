@@ -5,8 +5,7 @@ import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @auther Alessio
@@ -42,6 +41,10 @@ public class Residence implements Display {
     List<WB_Polygon> norBuildings;
     List<WB_Polygon> allBuildingBoundarys;
     List<ResidenceBuilding> residenceBuildings;
+    WB_Polygon greenOriginPolygon;
+    Green green;
+    double dis1 = -170;
+    double dis2 = 70;
 
 
 
@@ -75,6 +78,8 @@ public class Residence implements Display {
         residenceBuildings = initialResidenceBuildings();
         turnIfInRed(residenceBuildings);
         getRemovedBuilding();
+        greenOriginPolygon = new WB_Polygon();
+//        initialGreen();
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -365,6 +370,10 @@ public class Residence implements Display {
         return residenceBuildingList;
     }
 
+    public void initialGreen(){
+        green = new Green(greenOriginPolygon,dis1,dis2,app);
+    }
+
     public void turnIfInRed(List<ResidenceBuilding> buildings){
         for(ResidenceBuilding building: buildings){
             building.checkBuildingInRedLine();
@@ -401,6 +410,21 @@ public class Residence implements Display {
         residenceBuildings.remove(removeBuilding);
     }
 
+    public void creatPolygonWithHoles(){
+        WB_Coord[] shell = redLine.getPoints().toArray();
+        greenOriginPolygon = new WB_Polygon(gf.createPolygonWithHoles(shell,getHolesList()));
+    }
+
+
+        public WB_Coord[][] getHolesList(){
+        WB_Coord[][] holesList = new WB_Coord[residenceBuildings.size()][residenceBuildings.get(0).boundary.getPoints().size()];
+        for(int i = 0; i<residenceBuildings.size(); i++){
+            WB_Coord[] hole = residenceBuildings.get(i).boundary.getPoints().toArray();
+            WB_Coord[] reverse = W_Tools.reserve(hole);
+            holesList[i] = reverse;
+        }
+        return holesList;
+    }
 
 
     @Override
@@ -421,15 +445,13 @@ public class Residence implements Display {
         for (WB_Point p : getDivPoint()) {
             wb_render.drawPoint(p, 10);
         }
-        //画建筑
-//        app.noFill();
-//        app.stroke(0, 0, 50, 70);
-//            for (WB_Polygon p : allBuildingBoundarys) {
-//                wb_render.drawPolygonEdges(p);
-//            }
         for(ResidenceBuilding building:residenceBuildings){
             building.display();
         }
+//        app.stroke(0, 255, 0);
+//        app.noFill();
+//        wb_render.drawPolygonEdges(greenOriginPolygon);
+        green.display();
         app.popStyle();
     }
 }
