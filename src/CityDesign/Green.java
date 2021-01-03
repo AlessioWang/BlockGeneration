@@ -1,11 +1,12 @@
 package CityDesign;
 
+import Tools.TransTool;
 import Tools.W_Tools;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import processing.core.PApplet;
-import wblut.geom.WB_GeometryFactory;
-import wblut.geom.WB_Polygon;
+import wblut.geom.*;
+import wblut.hemesh.HEC_Creator;
 import wblut.processing.WB_Render;
 
 
@@ -27,26 +28,31 @@ public class Green implements Display {
     List<WB_Polygon> basicPolygon;
     List<WB_Polygon> simplyPolygons;
     List<WB_Polygon> greenZone;
+    List<WB_SimpleMesh> meshes;
+    List<WB_PolyLine> roadLines;
+    List<WB_Polygon> dividedGreens;
 
-
-    public Green(WB_Polygon originPolygon, double dis1, double dis2, PApplet applet) {
+    public Green(WB_Polygon originPolygon, double dis1, double dis2, List<WB_PolyLine> roadLines, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         this.originPolygon = originPolygon;
         this.dis1 = dis1;
         this.dis2 = dis2;
         this.basicPolygon = setBasicPolygon();
-        this.simplyPolygons = simply(this.basicPolygon,20);
+        this.simplyPolygons = simply(this.basicPolygon, 20);
         this.greenZone = setGreenZone();
+//        this.meshes = createMesh();
+        this.roadLines = roadLines;
+        this.dividedGreens = getDividedGreens();
     }
 
     public List<WB_Polygon> setBasicPolygon() {
-        return gf.createBufferedPolygons(originPolygon, dis1,0);
+        return gf.createBufferedPolygons(originPolygon, dis1, 0);
     }
 
-    public List<WB_Polygon> simply(List<WB_Polygon> wb_polygons,double tol){
+    public List<WB_Polygon> simply(List<WB_Polygon> wb_polygons, double tol) {
         List<WB_Polygon> output = new ArrayList<>();
-        for(WB_Polygon wb:wb_polygons){
+        for (WB_Polygon wb : wb_polygons) {
             Polygon polygon = W_Tools.WB_PolygonToJtsPolygon(wb);
             DouglasPeuckerSimplifier dgSim = new DouglasPeuckerSimplifier(polygon);
             dgSim.setDistanceTolerance(tol);
@@ -58,15 +64,28 @@ public class Green implements Display {
     }
 
     public List<WB_Polygon> setGreenZone() {
-//        List<WB_Polygon> output = new ArrayList<>();
-//        for(WB_Polygon polygon: simplyPolygons){
-//            WB_Polygon p = gf.createBufferedPolygons()
-//        }
-        return gf.createBufferedPolygons(simplyPolygons, dis2,0);
+        return gf.createBufferedPolygons(simplyPolygons, dis2, 0);
     }
 
+    public List<WB_SimpleMesh> createMesh() {
+        List<WB_SimpleMesh> meshes1 = new ArrayList<>();
+        for (WB_Polygon p : greenZone) {
+            meshes1.add(gf.createMesh(p, 100));
+        }
+        return meshes1;
+    }
 
-
+    public List<WB_Polygon> getDividedGreens() {
+        List<WB_Polygon> allPolygons = new ArrayList<>();
+//        for (WB_Polygon p: greenZone) {
+//            List<WB_Polygon> polygons = TransTool.getSplitRegions(p,roadLines);
+//            allPolygons.addAll(polygons);
+//        }
+        List<WB_Polygon> polygons = TransTool.getSplitRegions(greenZone.get(0), roadLines);
+        allPolygons.addAll(polygons);
+        System.out.println("green Num : " + allPolygons.size());
+        return allPolygons;
+    }
 
 
     @Override
@@ -79,12 +98,17 @@ public class Green implements Display {
 //            wb_render.drawPolygonEdges(polygon);
 //        }
         app.noFill();
-        app.stroke(10,150,10);
-        for (WB_Polygon polygon : simplyPolygons) {
+        app.stroke(10, 150, 10);
+        app.fill(0, 255, 10, 50);
+        for (WB_Polygon polygon : greenZone) {
             wb_render.drawPolygonEdges(polygon);
         }
-        app.fill(0,255,10,50);
-        for (WB_Polygon polygon : greenZone) {
+//        for (WB_SimpleMesh m : meshes) {
+//            wb_render.drawMeshEdges(m);
+//        }
+
+        app.noFill();
+        for (WB_Polygon polygon : dividedGreens) {
             wb_render.drawPolygonEdges(polygon);
         }
         app.popStyle();

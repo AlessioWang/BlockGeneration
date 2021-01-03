@@ -52,6 +52,7 @@ public class ResidenceBuilding implements Display {
         getBuffer(boundary, dis2others * 0.5);
         this.others = others;
         this.dis2others = dis2others;
+        setCenter();
     }
 
     public void moveDir(WB_Vector direction, double step) {

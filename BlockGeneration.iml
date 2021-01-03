@@ -22,5 +22,6 @@
         <jarDirectory url="file://$MODULE_DIR$/../../../lib/peasycam/library" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="igeo" level="application" />
   </component>
 </module>

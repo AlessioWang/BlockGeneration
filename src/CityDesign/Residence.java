@@ -27,7 +27,7 @@ public class Residence implements Display {
     double wholeHeight;
     double buildingGap;
     double widthDis;        //横向之间的楼间距
-    double angleTol = Math.PI*0.05;   //转变摆放方式的角度阈值
+    double angleTol = Math.PI * 0.05;   //转变摆放方式的角度阈值
     WB_PolyLine controlLineNorth;
     WB_PolyLine controlLineSouth;
     List<WB_PolyLine> controlLines;
@@ -45,7 +45,8 @@ public class Residence implements Display {
     Green green;
     double dis1 = -170;
     double dis2 = 70;
-
+    double roadDistance = 1000;
+    List<WB_PolyLine> roadLines;
 
 
     public Residence
@@ -80,6 +81,25 @@ public class Residence implements Display {
         getRemovedBuilding();
         greenOriginPolygon = new WB_Polygon();
 //        initialGreen();
+        roadLines = getRoadLine();
+    }
+
+    public void options(){
+        for (ResidenceBuilding b : residenceBuildings) {
+            b.checkBuildingInRedLine();
+            b.setCenter();
+            b.setCp();
+            if(!b.ifInRedLine) {
+                b.getInterPts();
+                b.getMidP();
+                b.setDir();
+                b.getDirLine();
+            }
+        }
+        this.creatPolygonWithHoles();
+        this.initialGreen();
+        this.moveBuildings();
+//        this.roadLines = this.getRoadLine();
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -316,25 +336,25 @@ public class Residence implements Display {
         return all;
     }
 
-    public List<WB_Polygon> selInterSecBuildings(List<List<WB_Polygon>> allBuildings){
+    public List<WB_Polygon> selInterSecBuildings(List<List<WB_Polygon>> allBuildings) {
         List<WB_Polygon> selBuildings = new ArrayList<>();
         List<List<WB_Point>> interPsList = new ArrayList<>();
         List<WB_Polygon> buildings = new ArrayList<>();
-        for(List<WB_Polygon> bs : allBuildings){
+        for (List<WB_Polygon> bs : allBuildings) {
             buildings.addAll(bs);
         }
-        for (WB_Polygon bui : buildings){
+        for (WB_Polygon bui : buildings) {
             List<WB_Segment> segs = bui.toSegments();
             List<WB_Segment> redSegs = redLine.toSegments();
             List<WB_Point> interPs = new ArrayList<>();
-            for(WB_Segment seg : segs){
-                for(WB_Segment reSeg: redSegs){
-                    WB_IntersectionResult interP =  WB_GeometryOp.getIntersection2D(seg,reSeg);
+            for (WB_Segment seg : segs) {
+                for (WB_Segment reSeg : redSegs) {
+                    WB_IntersectionResult interP = WB_GeometryOp.getIntersection2D(seg, reSeg);
                     WB_Point p = (WB_Point) interP.getObject();
                     interPs.add(p);
                 }
             }
-            if(interPs != null){
+            if (interPs != null) {
                 selBuildings.add(bui);
                 interPsList.add(interPs);
             }
@@ -342,14 +362,14 @@ public class Residence implements Display {
         return selBuildings;
     }
 
-    public WB_Polygon findClosestBoundary(WB_Polygon boundary){
+    public WB_Polygon findClosestBoundary(WB_Polygon boundary) {
         WB_Polygon closestBoundary = new WB_Polygon();
         WB_Point center = boundary.getCenter();
         double disTemp = Integer.MAX_VALUE;
-        for(WB_Polygon b : allBuildingBoundarys){
+        for (WB_Polygon b : allBuildingBoundarys) {
             WB_Point p = WB_GeometryOp2D.getClosestPoint2D(center, (WB_PolyLine) b);
             double dis = p.getDistance2D(center);
-            if(dis>10 && dis<disTemp){
+            if (dis > 10 && dis < disTemp) {
                 disTemp = dis;
                 closestBoundary = b;
             }
@@ -357,32 +377,32 @@ public class Residence implements Display {
         return closestBoundary;
     }
 
-    public List<ResidenceBuilding> initialResidenceBuildings(){
+    public List<ResidenceBuilding> initialResidenceBuildings() {
         List<ResidenceBuilding> residenceBuildingList = new ArrayList<>();
-        for(int i = 0; i<this.allBuildingBoundarys.size(); i++){
+        for (int i = 0; i < this.allBuildingBoundarys.size(); i++) {
             WB_Polygon thisBuilding = allBuildingBoundarys.get(i);
             WB_Polygon closestB = findClosestBoundary(thisBuilding);
             System.out.println(closestB.getSignedArea());
             ResidenceBuilding building = new ResidenceBuilding
-                    (i,this.allBuildingBoundarys.get(i),floorNum,floorHeight,redLine,buildingGap,app);
+                    (i, this.allBuildingBoundarys.get(i), floorNum, floorHeight, redLine, buildingGap, app);
             residenceBuildingList.add(building);
         }
         return residenceBuildingList;
     }
 
-    public void initialGreen(){
-        green = new Green(greenOriginPolygon,dis1,dis2,app);
+    public void initialGreen() {
+        green = new Green(greenOriginPolygon, dis1, dis2, roadLines , app);
     }
 
-    public void turnIfInRed(List<ResidenceBuilding> buildings){
-        for(ResidenceBuilding building: buildings){
+    public void turnIfInRed(List<ResidenceBuilding> buildings) {
+        for (ResidenceBuilding building : buildings) {
             building.checkBuildingInRedLine();
         }
     }
 
-    public void moveBuildings(){
-        for(ResidenceBuilding building:residenceBuildings){
-            if(!building.ifInRedLine){
+    public void moveBuildings() {
+        for (ResidenceBuilding building : residenceBuildings) {
+            if (!building.ifInRedLine) {
                 building.buildingMove();
             }
 //            if(!building.ifFullDis){
@@ -392,17 +412,17 @@ public class Residence implements Display {
     }
 
 
-    public void getRemovedBuilding(){
+    public void getRemovedBuilding() {
         double wholeDistance = Integer.MAX_VALUE;
         ResidenceBuilding removeBuilding = null;
         System.out.println("size ; " + residenceBuildings.size());
-        for(int j =0; j<residenceBuildings.size(); j++){
+        for (int j = 0; j < residenceBuildings.size(); j++) {
             double disTemp = 0;
-            for(int i =0; i<residenceBuildings.size(); i++){
+            for (int i = 0; i < residenceBuildings.size(); i++) {
                 double distance = residenceBuildings.get(j).boundary.getCenter().getDistance(residenceBuildings.get(i).boundary.getCenter());
                 disTemp += distance;
             }
-            if(disTemp<wholeDistance){
+            if (disTemp < wholeDistance) {
                 wholeDistance = disTemp;
                 removeBuilding = residenceBuildings.get(j);
             }
@@ -410,15 +430,15 @@ public class Residence implements Display {
         residenceBuildings.remove(removeBuilding);
     }
 
-    public void creatPolygonWithHoles(){
+    public void creatPolygonWithHoles() {
         WB_Coord[] shell = redLine.getPoints().toArray();
-        greenOriginPolygon = new WB_Polygon(gf.createPolygonWithHoles(shell,getHolesList()));
+        greenOriginPolygon = new WB_Polygon(gf.createPolygonWithHoles(shell, getHolesList()));
     }
 
 
-        public WB_Coord[][] getHolesList(){
+    public WB_Coord[][] getHolesList() {
         WB_Coord[][] holesList = new WB_Coord[residenceBuildings.size()][residenceBuildings.get(0).boundary.getPoints().size()];
-        for(int i = 0; i<residenceBuildings.size(); i++){
+        for (int i = 0; i < residenceBuildings.size(); i++) {
             WB_Coord[] hole = residenceBuildings.get(i).boundary.getPoints().toArray();
             WB_Coord[] reverse = W_Tools.reserve(hole);
             holesList[i] = reverse;
@@ -426,6 +446,23 @@ public class Residence implements Display {
         return holesList;
     }
 
+    public List<WB_PolyLine> getRoadLine() {
+        List<WB_PolyLine> lines = new ArrayList<>();
+        for (ResidenceBuilding b : residenceBuildings) {
+            List<WB_Point> closePts = new ArrayList<>();
+            for (ResidenceBuilding bo : residenceBuildings) {
+                double dis = b.center.getDistance2D(bo.center);
+                if (dis <= roadDistance && dis > 10) {
+                    closePts.add(bo.center);
+                }
+            }
+            for (WB_Point p : closePts) {
+                WB_PolyLine l = new WB_PolyLine(b.center, p);
+                lines.add(l);
+            }
+        }
+        return lines;
+    }
 
     @Override
     public void display() {
@@ -434,7 +471,7 @@ public class Residence implements Display {
         app.stroke(255, 0, 0);
         app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.redLine);
-        app.stroke(100, 0, 0,50);
+        app.stroke(100, 0, 0, 50);
         //画控制线
         for (WB_PolyLine l : this.controlLines) {
             wb_render.drawPolyLine(l);
@@ -442,15 +479,20 @@ public class Residence implements Display {
         //画点
         app.noStroke();
         app.fill(0, 0, 100);
-        for (WB_Point p : getDivPoint()) {
-            wb_render.drawPoint(p, 10);
-        }
-        for(ResidenceBuilding building:residenceBuildings){
+
+        for (ResidenceBuilding building : residenceBuildings) {
             building.display();
         }
 //        app.stroke(0, 255, 0);
 //        app.noFill();
 //        wb_render.drawPolygonEdges(greenOriginPolygon);
+
+
+//        app.strokeWeight(1);
+//        app.stroke(255, 0, 100);
+//        for (WB_PolyLine l : this.roadLines) {
+//            wb_render.drawPolyLine(l);
+//        }
         green.display();
         app.popStyle();
     }

@@ -38,21 +38,22 @@ public class ResidenceTest extends PApplet {
 
     public void draw() {
         background(255);
-        for (ResidenceBuilding b : residence.residenceBuildings) {
-            b.checkBuildingInRedLine();
-//            b.checkHaveFullDis();
-            b.setCenter();
-            b.setCp();
-            if(!b.ifInRedLine) {
-                b.getInterPts();
-                b.getMidP();
-                b.setDir();
-                b.getDirLine();
-            }
-        }
-        residence.creatPolygonWithHoles();
-        residence.initialGreen();
-        residence.moveBuildings();
+        residence.options();
+//        for (ResidenceBuilding b : residence.residenceBuildings) {
+//            b.checkBuildingInRedLine();
+//            b.setCenter();
+//            b.setCp();
+//            if(!b.ifInRedLine) {
+//                b.getInterPts();
+//                b.getMidP();
+//                b.setDir();
+//                b.getDirLine();
+//            }
+//        }
+//        residence.creatPolygonWithHoles();
+//        residence.initialGreen();
+//        residence.moveBuildings();
+//        residence.roadLines = residence.getRoadLine();
         residence.display();
         boundary.display();
     }
