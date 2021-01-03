@@ -41,8 +41,6 @@ public class Residence implements Display {
     List<WB_Polygon> rotateBuildings;
     List<WB_Polygon> norBuildings;
     List<WB_Polygon> allBuildingBoundarys;
-    //    List<List<WB_Polygon>> buildingsList;
-    //    List<List<WB_Point>> interPsList ;
     List<ResidenceBuilding> residenceBuildings;
 
 
@@ -74,10 +72,9 @@ public class Residence implements Display {
         this.norBuildings = getAllNorBuildings();
         this.rotateBuildings = getRotateBuildings();
         this.allBuildingBoundarys = getAllBuildingBoundarys();
-//        interPsList = new ArrayList<>();
         residenceBuildings = initialResidenceBuildings();
         turnIfInRed(residenceBuildings);
-
+        getRemovedBuilding();
     }
 
     public WB_Polygon getRedLine(WB_Polygon boundary, double redLineDis) {
@@ -160,11 +157,8 @@ public class Residence implements Display {
         List<WB_PolyLine> lines = new ArrayList<>();
         for (int n = 0; n < calculateControlNum(); n++) {
             WB_PolyLine l = getCtrlLine(n + 1);
-            System.out.println("11111: " + l.getPoint(0));
-            System.out.println("22222: " + l.getPoint(1));
             lines.add(l);
         }
-        System.out.println("$$" + lines.size());
         return lines;
     }
 
@@ -343,10 +337,29 @@ public class Residence implements Display {
         return selBuildings;
     }
 
+    public WB_Polygon findClosestBoundary(WB_Polygon boundary){
+        WB_Polygon closestBoundary = new WB_Polygon();
+        WB_Point center = boundary.getCenter();
+        double disTemp = Integer.MAX_VALUE;
+        for(WB_Polygon b : allBuildingBoundarys){
+            WB_Point p = WB_GeometryOp2D.getClosestPoint2D(center, (WB_PolyLine) b);
+            double dis = p.getDistance2D(center);
+            if(dis>10 && dis<disTemp){
+                disTemp = dis;
+                closestBoundary = b;
+            }
+        }
+        return closestBoundary;
+    }
+
     public List<ResidenceBuilding> initialResidenceBuildings(){
         List<ResidenceBuilding> residenceBuildingList = new ArrayList<>();
         for(int i = 0; i<this.allBuildingBoundarys.size(); i++){
-            ResidenceBuilding building = new ResidenceBuilding(i,this.allBuildingBoundarys.get(i),floorNum,floorHeight,redLine,true,app);
+            WB_Polygon thisBuilding = allBuildingBoundarys.get(i);
+            WB_Polygon closestB = findClosestBoundary(thisBuilding);
+            System.out.println(closestB.getSignedArea());
+            ResidenceBuilding building = new ResidenceBuilding
+                    (i,this.allBuildingBoundarys.get(i),floorNum,floorHeight,redLine,buildingGap,app);
             residenceBuildingList.add(building);
         }
         return residenceBuildingList;
@@ -359,14 +372,34 @@ public class Residence implements Display {
     }
 
     public void moveBuildings(){
-        List<ResidenceBuilding> outBuildings = new ArrayList<>();
         for(ResidenceBuilding building:residenceBuildings){
             if(!building.ifInRedLine){
                 building.buildingMove();
             }
+//            if(!building.ifFullDis){
+//                building.disMove();
+//            }
         }
     }
 
+
+    public void getRemovedBuilding(){
+        double wholeDistance = Integer.MAX_VALUE;
+        ResidenceBuilding removeBuilding = null;
+        System.out.println("size ; " + residenceBuildings.size());
+        for(int j =0; j<residenceBuildings.size(); j++){
+            double disTemp = 0;
+            for(int i =0; i<residenceBuildings.size(); i++){
+                double distance = residenceBuildings.get(j).boundary.getCenter().getDistance(residenceBuildings.get(i).boundary.getCenter());
+                disTemp += distance;
+            }
+            if(disTemp<wholeDistance){
+                wholeDistance = disTemp;
+                removeBuilding = residenceBuildings.get(j);
+            }
+        }
+        residenceBuildings.remove(removeBuilding);
+    }
 
 
 

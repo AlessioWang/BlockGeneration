@@ -13,9 +13,12 @@ import java.util.List;
  * @date 2020/12/24
  **/
 public class W_Tools {
-    private static GeometryFactory jtsGf;
+    private static GeometryFactory jtsGf= new GeometryFactory();
+    private static  WB_GeometryFactory gf= new WB_GeometryFactory();
 
     //计算两点的距离
+
+
     static public double getDistance(WB_Point a, WB_Point b) {
         return Math.sqrt((a.xd() - b.xd()) * (a.xd() - b.xd()) + (a.yd() - b.yd()) * (a.yd() - b.yd()));
     }
@@ -71,6 +74,11 @@ public class W_Tools {
             }
         }
         return true;
+    }
+
+    public static WB_Polygon getBuffer(WB_Polygon boundary, double redLineDis) {
+        List<WB_Polygon> list = gf.createBufferedPolygons(boundary, redLineDis,0);
+        return list.get(0);
     }
 
     //Jts与Hemesh转化工具

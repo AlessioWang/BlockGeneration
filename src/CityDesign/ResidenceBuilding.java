@@ -18,6 +18,7 @@ public class ResidenceBuilding implements Display {
 
     WB_Render wb_render;
     PApplet app;
+    WB_GeometryFactory gf;
     WB_Polygon boundary;
     double floorNum;
     double floorHeight;
@@ -32,18 +33,25 @@ public class ResidenceBuilding implements Display {
     WB_Point cpInBuilding;
     List<WB_Point> interPts;
     WB_Point midP;
+    WB_Polygon buffer;
+    boolean ifFullDis;
+    WB_Polygon others;
+    double dis2others;
 
 
-    public ResidenceBuilding(int index, WB_Polygon boundary, double floorNum, double floorHeight, WB_Polygon redLine, boolean ifInRedLine, PApplet applet) {
+    public ResidenceBuilding(int index, WB_Polygon boundary, double floorNum, double floorHeight, WB_Polygon redLine, double dis2others, PApplet applet) {
         this.app = applet;
+        gf = new WB_GeometryFactory();
         wb_render = new WB_Render(applet);
         this.index = index;
         this.boundary = boundary;
         this.floorNum = floorNum;
         this.floorHeight = floorHeight;
-        this.ifInRedLine = ifInRedLine;
         this.redLine = redLine;
         this.interPts = new ArrayList<>();
+        getBuffer(boundary, dis2others * 0.5);
+        this.others = others;
+        this.dis2others = dis2others;
     }
 
     public void moveDir(WB_Vector direction, double step) {
@@ -99,11 +107,16 @@ public class ResidenceBuilding implements Display {
 
     public void setDir() {
 //        this.dir = W_Tools.getUnitVector(center, midP);
-        this.dir = W_Tools.getUnitVector(redLine.getCenter(),center);
+        this.dir = W_Tools.getUnitVector(redLine.getCenter(), center);
     }
 
     public void buildingMove() {
         this.moveDir(dir, step);
+    }
+
+    public void disMove() {
+        WB_Vector v = W_Tools.getUnitVector( center,others.getCenter());
+        this.moveDir(v, step);
     }
 
     public void getDirLine() {
@@ -117,8 +130,8 @@ public class ResidenceBuilding implements Display {
             List<WB_Segment> redLineSegs = this.redLine.toSegments();
             for (WB_Segment buiSeg : buildSegs) {
                 for (WB_Segment redSeg : redLineSegs) {
-                    WB_IntersectionResult result = WB_GeometryOp2D.getIntersection2D(buiSeg,redSeg);
-                    if(result.intersection) {
+                    WB_IntersectionResult result = WB_GeometryOp2D.getIntersection2D(buiSeg, redSeg);
+                    if (result.intersection) {
                         WB_Point p = (WB_Point) result.getObject();
                         interPts.add(p);
                     }
@@ -127,14 +140,20 @@ public class ResidenceBuilding implements Display {
         }
     }
 
-    public void getMidP(){
-        System.out.println(this.interPts.size());
+    public void getMidP() {
         WB_Point p1 = this.interPts.get(0);
-        WB_Point p2 = this.interPts.get(interPts.size()-1);
-        this.midP = new WB_Point(((p1.xd()+p2.xd())*0.5),(p1.yd()+p2.yd()*0.5));
+        WB_Point p2 = this.interPts.get(interPts.size() - 1);
+        this.midP = new WB_Point(((p1.xd() + p2.xd()) * 0.5), (p1.yd() + p2.yd() * 0.5));
     }
 
+    public void getBuffer(WB_Polygon boundary, double redLineDis) {
+        List<WB_Polygon> list = gf.createBufferedPolygons(boundary, redLineDis);
+        this.buffer = list.get(0);
+    }
 
+    public void checkHaveFullDis() {
+        ifFullDis = W_Tools.checkInRedLine(this.buffer, W_Tools.getBuffer(this.others, dis2others * 0.5));
+    }
 
 
     @Override

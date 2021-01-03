@@ -33,16 +33,14 @@ public class ResidenceTest extends PApplet {
         points = BlockBoundary.set1000BoundaryPoint();
         boundary = new BlockBoundary(points, this);
         residence = new Residence
-                (boundary.outline, 100, 600, 170, 1, 30, 100, 6, this);
-        for (ResidenceBuilding r : residence.residenceBuildings) {
-            System.out.println(r.ifInRedLine);
-        }
+                (boundary.outline, 150, 600, 170, 1, 30, 100, 6, this);
     }
 
     public void draw() {
         background(255);
         for (ResidenceBuilding b : residence.residenceBuildings) {
             b.checkBuildingInRedLine();
+//            b.checkHaveFullDis();
             b.setCenter();
             b.setCp();
             if(!b.ifInRedLine) {
