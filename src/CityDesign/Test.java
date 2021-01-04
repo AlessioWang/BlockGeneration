@@ -7,6 +7,8 @@ import processing.core.PApplet;
 import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
+import wblut.geom.WB_PyramidFactory;
+import wblut.hemesh.*;
 import wblut.processing.WB_Render;
 
 import java.util.ArrayList;
@@ -34,7 +36,9 @@ public class Test extends PApplet {
     List<WB_Point> pts1 =new ArrayList<>();
     List<WB_Point> pts2 =new ArrayList<>();
 
-
+    HE_Mesh mesh;
+    HEC_Box creator = new HEC_Box();
+    HEM_Extrude modifier;
 
     public void settings(){
         size(1200,1200, P3D);
@@ -74,6 +78,12 @@ public class Test extends PApplet {
         lines.add(l2);
 
         polygons = TransTool.getSplitRegions(polygon,lines);
+        creator.setWidth(100).setHeight(300).setDepth(1000);
+
+        modifier = new HEM_Extrude();
+
+        HE_Mesh m = new HE_Mesh();
+
     }
 
     public void draw(){

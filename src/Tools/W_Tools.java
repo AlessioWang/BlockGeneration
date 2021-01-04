@@ -12,7 +12,7 @@ import java.util.List;
  **/
 public class W_Tools {
     private static GeometryFactory gf = new GeometryFactory();
-    private static  WB_GeometryFactory wbgf = new WB_GeometryFactory();
+    private static WB_GeometryFactory wbgf = new WB_GeometryFactory();
 
     //计算两点的距离
 
@@ -75,17 +75,17 @@ public class W_Tools {
     }
 
     public static WB_Polygon getBuffer(WB_Polygon boundary, double redLineDis) {
-        List<WB_Polygon> list = wbgf.createBufferedPolygons(boundary, redLineDis,0);
+        List<WB_Polygon> list = wbgf.createBufferedPolygons(boundary, redLineDis, 0);
         return list.get(0);
     }
 
     //数组翻转
-    public static WB_Coord[] reserve( WB_Coord[] arr ){
+    public static WB_Coord[] reserve(WB_Coord[] arr) {
         WB_Coord[] arr1 = new WB_Coord[arr.length];
-        for( int x=0;x<arr.length;x++ ){
-            arr1[x] = arr[arr.length-x-1];
+        for (int x = 0; x < arr.length; x++) {
+            arr1[x] = arr[arr.length - x - 1];
         }
-        return arr1 ;
+        return arr1;
     }
 
     //Jts与Hemesh转化工具
@@ -193,6 +193,20 @@ public class W_Tools {
             return new WB_Polygon(exteriorPoints, interiorHoles);
         }
     }
+
+    public static List<WB_PolyLine> getShortedPolylines(List<WB_PolyLine> lines, double tol) {
+        List<WB_PolyLine> out = new ArrayList<>();
+        for (WB_PolyLine l : lines) {
+            WB_Vector v1 = getUnitVector(l.getPoint(0), l.getPoint(1));
+            WB_Vector v2 = getUnitVector(l.getPoint(1), l.getPoint(0));
+            WB_Point p1 = l.getPoint(0).add((v2).mul(tol));
+            WB_Point p2 = l.getPoint(1).add((v1).mul(tol));
+            WB_PolyLine newL = new WB_PolyLine(p1, p2);
+            out.add(newL);
+        }
+        return out;
+    }
+
 
 
 }

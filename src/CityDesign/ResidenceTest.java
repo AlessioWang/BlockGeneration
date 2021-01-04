@@ -33,7 +33,7 @@ public class ResidenceTest extends PApplet {
         points = BlockBoundary.set1000BoundaryPoint();
         boundary = new BlockBoundary(points, this);
         residence = new Residence
-                (boundary.outline, 150, 600, 170, 1, 30, 100, 6, this);
+                (boundary.outline, 150, 600, 150, 1, 30, 100, 6, this);
     }
 
     public void draw() {

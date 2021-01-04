@@ -37,6 +37,7 @@ public class ResidenceBuilding implements Display {
     boolean ifFullDis;
     WB_Polygon others;
     double dis2others;
+    BuildingVol buildingVols;
 
 
     public ResidenceBuilding(int index, WB_Polygon boundary, double floorNum, double floorHeight, WB_Polygon redLine, double dis2others, PApplet applet) {
@@ -156,6 +157,9 @@ public class ResidenceBuilding implements Display {
         ifFullDis = W_Tools.checkInRedLine(this.buffer, W_Tools.getBuffer(this.others, dis2others * 0.5));
     }
 
+    public void initialVols(){
+        buildingVols = new BuildingVol(boundary,floorHeight,floorNum,app);
+    }
 
     @Override
     public void display() {
@@ -169,5 +173,6 @@ public class ResidenceBuilding implements Display {
         wb_render.drawPoint(cp, 7);
 //        wb_render.drawPolylineEdges(line);
         app.popStyle();
+        buildingVols.display();
     }
 }

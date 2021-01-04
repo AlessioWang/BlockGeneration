@@ -12,7 +12,6 @@ import java.util.*;
  * @date 2020/12/27
  **/
 public class Residence implements Display {
-
     WB_Render wb_render;
     PApplet app;
     WB_GeometryFactory gf;
@@ -84,12 +83,12 @@ public class Residence implements Display {
         roadLines = getRoadLine();
     }
 
-    public void options(){
+    public void options() {
         for (ResidenceBuilding b : residenceBuildings) {
             b.checkBuildingInRedLine();
             b.setCenter();
             b.setCp();
-            if(!b.ifInRedLine) {
+            if (!b.ifInRedLine) {
                 b.getInterPts();
                 b.getMidP();
                 b.setDir();
@@ -99,6 +98,9 @@ public class Residence implements Display {
         this.creatPolygonWithHoles();
         this.initialGreen();
         this.moveBuildings();
+        for (ResidenceBuilding b: residenceBuildings) {
+            b.initialVols();
+        }
 //        this.roadLines = this.getRoadLine();
     }
 
@@ -391,7 +393,7 @@ public class Residence implements Display {
     }
 
     public void initialGreen() {
-        green = new Green(greenOriginPolygon, dis1, dis2, roadLines , app);
+        green = new Green(greenOriginPolygon, dis1, dis2, roadLines, app);
     }
 
     public void turnIfInRed(List<ResidenceBuilding> buildings) {
@@ -463,6 +465,24 @@ public class Residence implements Display {
         }
         return lines;
     }
+
+//    public List<WB_PolyLine> getRoadLine() {
+//        List<WB_PolyLine> lines = new ArrayList<>();
+//        for (ResidenceBuilding b : residenceBuildings) {
+//            List<WB_Point> closePts = new ArrayList<>();
+//            for (WB_Polygon bo : allBuildingBoundarys) {
+//                double dis = b.center.getDistance2D(bo.getCenter());
+//                if (dis <= roadDistance && dis > 10) {
+//                    closePts.add(bo.getCenter());
+//                }
+//            }
+//            for (WB_Point p : closePts) {
+//                WB_PolyLine l = new WB_PolyLine(b.center, p);
+//                lines.add(l);
+//            }
+//        }
+//        return lines;
+//    }
 
     @Override
     public void display() {

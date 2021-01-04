@@ -7,9 +7,12 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.hemesh.HEC_Creator;
+import wblut.hemesh.HE_Mesh;
 import wblut.processing.WB_Render;
 
 
+import java.lang.reflect.Modifier;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +34,11 @@ public class Green implements Display {
     List<WB_SimpleMesh> meshes;
     List<WB_PolyLine> roadLines;
     List<WB_Polygon> dividedGreens;
+    List<WB_Polygon> greenZoneWithRoad;
+    double roadWidth = 15;
+
+
+
 
     public Green(WB_Polygon originPolygon, double dis1, double dis2, List<WB_PolyLine> roadLines, PApplet applet) {
         this.app = applet;
@@ -44,6 +52,8 @@ public class Green implements Display {
 //        this.meshes = createMesh();
         this.roadLines = roadLines;
         this.dividedGreens = getDividedGreens();
+        this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens,roadWidth);
+
     }
 
     public List<WB_Polygon> setBasicPolygon() {
@@ -72,19 +82,29 @@ public class Green implements Display {
         for (WB_Polygon p : greenZone) {
             meshes1.add(gf.createMesh(p, 100));
         }
+
         return meshes1;
     }
 
-    public List<WB_Polygon> getDividedGreens() {
+    private List<WB_Polygon> getDividedGreens() {
         List<WB_Polygon> allPolygons = new ArrayList<>();
-//        for (WB_Polygon p: greenZone) {
-//            List<WB_Polygon> polygons = TransTool.getSplitRegions(p,roadLines);
-//            allPolygons.addAll(polygons);
-//        }
-        List<WB_Polygon> polygons = TransTool.getSplitRegions(greenZone.get(0), roadLines);
-        allPolygons.addAll(polygons);
-        System.out.println("green Num : " + allPolygons.size());
+        roadLines = W_Tools.getShortedPolylines(roadLines, 10);
+        for (WB_Polygon p : greenZone) {
+            List<WB_Polygon> polygons = TransTool.getSplitRegions(p, roadLines);
+            allPolygons.addAll(polygons);
+        }
+//        List<WB_Polygon> polygons = TransTool.getSplitRegions(greenZone.get(0), roadLines);
+//        allPolygons.addAll(polygons);
+//        System.out.println("green Num : " + allPolygons.size());
         return allPolygons;
+    }
+
+    public List<WB_Polygon> getGreenZoneWithRoad(List<WB_Polygon> greens, double width) {
+        List<WB_Polygon> out = new ArrayList<>();
+        for (WB_Polygon green : greens) {
+            out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
+        }
+        return out;
     }
 
 
@@ -100,15 +120,15 @@ public class Green implements Display {
         app.noFill();
         app.stroke(10, 150, 10);
         app.fill(0, 255, 10, 50);
-        for (WB_Polygon polygon : greenZone) {
-            wb_render.drawPolygonEdges(polygon);
-        }
+//        for (WB_Polygon polygon : greenZone) {
+//            wb_render.drawPolygonEdges(polygon);
+//        }
 //        for (WB_SimpleMesh m : meshes) {
 //            wb_render.drawMeshEdges(m);
 //        }
 
-        app.noFill();
-        for (WB_Polygon polygon : dividedGreens) {
+//        app.noFill();
+        for (WB_Polygon polygon : greenZoneWithRoad) {
             wb_render.drawPolygonEdges(polygon);
         }
         app.popStyle();
