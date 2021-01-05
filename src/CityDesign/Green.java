@@ -49,7 +49,6 @@ public class Green implements Display {
         this.basicPolygon = setBasicPolygon();
         this.simplyPolygons = simply(this.basicPolygon, 20);
         this.greenZone = setGreenZone();
-//        this.meshes = createMesh();
         this.roadLines = roadLines;
         this.dividedGreens = getDividedGreens();
         this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens,roadWidth);
@@ -88,7 +87,7 @@ public class Green implements Display {
 
     private List<WB_Polygon> getDividedGreens() {
         List<WB_Polygon> allPolygons = new ArrayList<>();
-        roadLines = W_Tools.getShortedPolylines(roadLines, 10);
+        roadLines = W_Tools.getShortedPolylines(roadLines, 50);
         for (WB_Polygon p : greenZone) {
             List<WB_Polygon> polygons = TransTool.getSplitRegions(p, roadLines);
             allPolygons.addAll(polygons);
@@ -123,13 +122,11 @@ public class Green implements Display {
 //        for (WB_Polygon polygon : greenZone) {
 //            wb_render.drawPolygonEdges(polygon);
 //        }
-//        for (WB_SimpleMesh m : meshes) {
-//            wb_render.drawMeshEdges(m);
-//        }
-
-//        app.noFill();
         for (WB_Polygon polygon : greenZoneWithRoad) {
             wb_render.drawPolygonEdges(polygon);
+        }
+        for (WB_PolyLine polygon : roadLines) {
+            wb_render.drawPolylineEdges(polygon);
         }
         app.popStyle();
     }

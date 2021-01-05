@@ -4,10 +4,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import wblut.geom.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -236,10 +233,7 @@ public class TransTool {
         LineString[] lineString = new LineString[polyLines.size()];
         for (int i = 0; i < lineString.length; i++)
             lineString[i] = toJTS_LineString(polyLines.get(i));
-        Collection lines = new ArrayList();
-        for (LineString string : lineString) {
-            lines.add(string);
-        }
+        Collection lines = new ArrayList(Arrays.asList(lineString));
         lines.add(region.getExteriorRing());
         Iterator iterator = lines.iterator();
         Geometry nodeLineStrings = (LineString) iterator.next();
@@ -253,9 +247,8 @@ public class TransTool {
         Collection polys = polygonizer.getPolygons();
 //        System.out.println("polys.size() = "+polys.size());
         List<WB_Polygon> list = new ArrayList<>();
-        Iterator it = polys.iterator();
-        while (it.hasNext()) {
-            Douglas douglas = new Douglas(toWB_PolygonExterior((Polygon) it.next()), .1);
+        for (Object poly : polys) {
+            Douglas douglas = new Douglas(toWB_PolygonExterior((Polygon) poly), .1);
             list.add(douglas.getTransPolygon());
         }
         return list;

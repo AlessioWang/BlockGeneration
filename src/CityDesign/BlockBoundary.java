@@ -85,13 +85,26 @@ public class BlockBoundary implements Display {
         return list;
         }
 
+    public static List<WB_Point> setCommercialBoundaryPoint(){
+        WB_Point p1 = new WB_Point(50, 50);
+        WB_Point p2 = new WB_Point(50, 1000);
+        WB_Point p3 = new WB_Point(1000, 1000);
+        WB_Point p4 = new WB_Point(1200, 0);
+        List<WB_Point> list = new ArrayList<>();
+        list.add(p1);
+        list.add(p2);
+        list.add(p3);
+        list.add(p4);
+        return list;
+    }
+
 
     @Override
     public void display() {
         app.pushStyle();
         app.noFill();
         app.stroke(0,0,0);
-        app.strokeWeight(5);
+        app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.outline);
         app.popStyle();
     }

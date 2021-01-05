@@ -44,7 +44,7 @@ public class Residence implements Display {
     Green green;
     double dis1 = -170;
     double dis2 = 70;
-    double roadDistance = 1000;
+    double roadDistance = 800;
     List<WB_PolyLine> roadLines;
 
 
@@ -508,8 +508,8 @@ public class Residence implements Display {
 //        wb_render.drawPolygonEdges(greenOriginPolygon);
 
 
-//        app.strokeWeight(1);
-//        app.stroke(255, 0, 100);
+        app.strokeWeight(5);
+        app.stroke(0,0,255);
 //        for (WB_PolyLine l : this.roadLines) {
 //            wb_render.drawPolyLine(l);
 //        }
