@@ -39,9 +39,9 @@ public class CityDesign extends PApplet {
         pointsCom = BlockBoundary.setCommercialBoundaryPoint();
         commercialBoundary = new BlockBoundary(pointsCom,this);
         residence = new Residence
-                (boundary.outline, 100, 500, 150, 1, 30, 100, 6, this);
+            (boundary.outline, 100, 500, 150, 1, 30, 100, 10, this);
         commercial = new Commercial
-                (commercialBoundary.outline,400,6,300,5,100,this);
+            (commercialBoundary.outline,60,6,300,5,100,this);
     }
 
     public void draw() {

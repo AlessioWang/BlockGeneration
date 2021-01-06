@@ -1,6 +1,7 @@
 package CityDesign;
 
 import Tools.TransTool;
+import Tools.W_Tools;
 import peasy.CameraState;
 import peasy.PeasyCam;
 import processing.core.PApplet;
@@ -77,13 +78,8 @@ public class Test extends PApplet {
         lines.add(l1);
         lines.add(l2);
 
-        polygons = TransTool.getSplitRegions(polygon,lines);
-        creator.setWidth(100).setHeight(300).setDepth(1000);
-
-        modifier = new HEM_Extrude();
-
-        HE_Mesh m = new HE_Mesh();
-
+//        polygons = TransTool.getSplitRegions(polygon,lines);
+//        polygons = W_Tools.splitPolygonWithPolylineList(polygon,lines);
     }
 
     public void draw(){

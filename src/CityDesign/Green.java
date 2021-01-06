@@ -35,9 +35,7 @@ public class Green implements Display {
     List<WB_PolyLine> roadLines;
     List<WB_Polygon> dividedGreens;
     List<WB_Polygon> greenZoneWithRoad;
-    double roadWidth = 15;
-
-
+    double roadWidth = 30;
 
 
     public Green(WB_Polygon originPolygon, double dis1, double dis2, List<WB_PolyLine> roadLines, PApplet applet) {
@@ -51,9 +49,35 @@ public class Green implements Display {
         this.greenZone = setGreenZone();
         this.roadLines = roadLines;
         this.dividedGreens = getDividedGreens();
-        this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens,roadWidth);
+        this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens, roadWidth);
 
     }
+
+    public Green(WB_Polygon originPolygon, List<WB_PolyLine> roadLines, double roadWidth, double minArea, PApplet applet) {
+        this.app = applet;
+        wb_render = new WB_Render(applet);
+        this.originPolygon = originPolygon;
+        this.roadLines = roadLines;
+        this.greenZoneWithRoad = getDivGreens(originPolygon, roadLines, minArea, roadWidth);
+    }
+
+
+    //商业
+    public List<WB_Polygon> getDivGreens(WB_Polygon back, List<WB_PolyLine> cutters, double minArea, double streetWidth) {
+        List<WB_Polygon> greensSel = new ArrayList<>();
+        List<WB_Polygon> backs = new ArrayList<>();
+        backs.add(back);
+        List<WB_Polygon> divs = W_Tools.splitPolygonWithPolylineList(backs, cutters);
+        for (WB_Polygon p : divs) {
+            double area = Math.abs(p.getSignedArea());
+            if (area > minArea) {
+                greensSel.add(p);
+            }
+        }
+        List<WB_Polygon> polygons = getGreenZoneWithRoad(greensSel, streetWidth);
+        return polygons;
+    }
+
 
     public List<WB_Polygon> setBasicPolygon() {
         return gf.createBufferedPolygons(originPolygon, dis1, 0);
@@ -62,10 +86,14 @@ public class Green implements Display {
     public List<WB_Polygon> simply(List<WB_Polygon> wb_polygons, double tol) {
         List<WB_Polygon> output = new ArrayList<>();
         for (WB_Polygon wb : wb_polygons) {
+            for (int i = 0; i < wb.getNumberOfPoints(); i++) {
+//                System.out.println(wb.getPoint(i).toString());
+            }
             Polygon polygon = W_Tools.WB_PolygonToJtsPolygon(wb);
             DouglasPeuckerSimplifier dgSim = new DouglasPeuckerSimplifier(polygon);
             dgSim.setDistanceTolerance(tol);
             polygon = (Polygon) dgSim.getResultGeometry();
+
             WB_Polygon outWbPolygon = W_Tools.JtsPolygonToWB_Polygon(polygon);
             output.add(outWbPolygon);
         }
@@ -85,23 +113,30 @@ public class Green implements Display {
         return meshes1;
     }
 
+//    private List<WB_Polygon> getDividedGreens() {
+//        List<WB_Polygon> allPolygons = new ArrayList<>();
+//        roadLines = W_Tools.getShortedPolylines(roadLines, 50);
+//        for (WB_Polygon p : greenZone) {
+//            List<WB_Polygon> polygons = TransTool.getSplitRegions(p, roadLines);
+//            allPolygons.addAll(polygons);
+//        }
+//        return allPolygons;
+//    }
+
     private List<WB_Polygon> getDividedGreens() {
         List<WB_Polygon> allPolygons = new ArrayList<>();
         roadLines = W_Tools.getShortedPolylines(roadLines, 50);
-        for (WB_Polygon p : greenZone) {
-            List<WB_Polygon> polygons = TransTool.getSplitRegions(p, roadLines);
-            allPolygons.addAll(polygons);
-        }
-//        List<WB_Polygon> polygons = TransTool.getSplitRegions(greenZone.get(0), roadLines);
-//        allPolygons.addAll(polygons);
-//        System.out.println("green Num : " + allPolygons.size());
+        allPolygons = W_Tools.splitPolygonWithPolylineList(greenZone, roadLines);
         return allPolygons;
     }
+
 
     public List<WB_Polygon> getGreenZoneWithRoad(List<WB_Polygon> greens, double width) {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon green : greens) {
-            out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
+            if (green != null) {
+                out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
+            }
         }
         return out;
     }
@@ -119,14 +154,11 @@ public class Green implements Display {
         app.noFill();
         app.stroke(10, 150, 10);
         app.fill(0, 255, 10, 50);
-//        for (WB_Polygon polygon : greenZone) {
-//            wb_render.drawPolygonEdges(polygon);
+//        for (WB_PolyLine l : roadLines) {
+//            wb_render.drawPolylineEdges(l);
 //        }
         for (WB_Polygon polygon : greenZoneWithRoad) {
             wb_render.drawPolygonEdges(polygon);
-        }
-        for (WB_PolyLine polygon : roadLines) {
-            wb_render.drawPolylineEdges(polygon);
         }
         app.popStyle();
     }

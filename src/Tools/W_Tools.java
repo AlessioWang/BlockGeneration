@@ -1,9 +1,13 @@
 package Tools;
 
+
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import wblut.geom.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -89,12 +93,12 @@ public class W_Tools {
     }
 
     //Jts与Hemesh转化工具
-//    public static LineString WB_SegmentToJtsLineString(final WB_Segment seg) {
-//        Coordinate[] coords = new Coordinate[2];
-//        coords[0] = new Coordinate(seg.getOrigin().xd(), seg.getOrigin().yd(), seg.getOrigin().zd());
-//        coords[1] = new Coordinate(seg.getEndpoint().xd(), seg.getEndpoint().yd(), seg.getEndpoint().zd());
-//        return wbgf.createLineString(coords);
-//    }
+    public static LineString WB_SegmentToJtsLineString(final WB_Segment seg) {
+        Coordinate[] coords = new Coordinate[2];
+        coords[0] = new Coordinate(seg.getOrigin().xd(), seg.getOrigin().yd(), seg.getOrigin().zd());
+        coords[1] = new Coordinate(seg.getEndpoint().xd(), seg.getEndpoint().yd(), seg.getEndpoint().zd());
+        return gf.createLineString(coords);
+    }
 
     public static WB_PolyLine JtsLineStringToWB_PolyLine(final LineString p) {
         WB_Coord[] points = new WB_Point[p.getNumPoints()];
@@ -194,6 +198,7 @@ public class W_Tools {
         }
     }
 
+    //缩短polyline
     public static List<WB_PolyLine> getShortedPolylines(List<WB_PolyLine> lines, double tol) {
         List<WB_PolyLine> out = new ArrayList<>();
         for (WB_PolyLine l : lines) {
@@ -206,6 +211,83 @@ public class W_Tools {
         }
         return out;
     }
+
+    //创建带洞多边形
+    public static WB_Polygon getPolygonWithHoles(WB_Polygon polygon, double depth) {
+        WB_Coord[] shell = polygon.getPoints().toArray();   //边缘
+        WB_Coord[][] holeCoordsList = null;
+        List<WB_Polygon> holeList = wbgf.createBufferedPolygons(polygon, depth * (-1));
+        for (int i = 0; i < holeList.size(); i++) {
+            holeCoordsList = new WB_Coord[holeList.size()][holeList.get(i).getPoints().size()];    //创建洞的点集
+            for (int j = 0; j < holeList.size(); j++) {
+                WB_Coord[] hole = holeList.get(j).getPoints().toArray();
+                WB_Coord[] reverse = W_Tools.reserve(hole);
+                holeCoordsList[j] = reverse;
+            }
+        }
+        return new WB_Polygon(wbgf.createPolygonWithHoles(shell, holeCoordsList));
+    }
+
+    //线切割polygon，得到切割后的List<polygon>
+    public static List<WB_Polygon> splitPolygonWithPolylineList(List<WB_Polygon> back, List<WB_PolyLine> cutters) {
+        List<LineString> lines = new ArrayList<>();
+        List<WB_Segment> allSegs = new ArrayList<>();
+        List<WB_Polygon> output = new ArrayList<>();
+        for (WB_PolyLine cutter : cutters) {
+            for (int i = 0; i < cutter.getNumberSegments(); i++) {
+                WB_Segment segment = cutter.getSegment(i);
+                allSegs.add(segment);
+            }
+        }
+        for (WB_Polygon p : back) {
+            allSegs.addAll(p.toSegments());
+        }
+//        System.out.println("segNum : " + allSegs.size());
+        for (WB_Segment segment : allSegs) {
+            LineString lineString = WB_SegmentToJtsLineString(segment);
+            lines.add(lineString);
+        }
+        Geometry noded = (LineString) lines.get(0);
+        for (int i = 1; i < lines.size(); i++) {
+            noded = noded.union((LineString) lines.get(i));
+        }
+//        System.out.println("lineNum : " + lines.size());
+        Polygonizer polygonizer = new Polygonizer();
+        polygonizer.add(noded);
+        Collection polys = polygonizer.getPolygons();
+//        System.out.println("polyNum : " + polys.size());
+        for (Object poly : polys) {
+            WB_Polygon wb_polygon = jtsPolygonToWB_Polygon((Polygon) poly);
+            output.add(wb_polygon);
+        }
+        return output;
+    }
+
+    public static  List<WB_Polygon> selPolygonsInRing(WB_Polygon ring, List<WB_Polygon> polygons){
+        List<WB_Polygon> selPolygons = new ArrayList<>();
+        for(WB_Polygon polygon : polygons){
+            WB_Point point = polygon.getCenter();
+            if(!WB_GeometryOp.contains2D(point,ring)){
+                selPolygons.add(polygon);
+            }
+        }
+        return selPolygons;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

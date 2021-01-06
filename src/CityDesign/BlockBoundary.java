@@ -86,15 +86,17 @@ public class BlockBoundary implements Display {
         }
 
     public static List<WB_Point> setCommercialBoundaryPoint(){
-        WB_Point p1 = new WB_Point(50, 50);
-        WB_Point p2 = new WB_Point(50, 1000);
-        WB_Point p3 = new WB_Point(1000, 1000);
-        WB_Point p4 = new WB_Point(1200, 0);
+        WB_Point p1 = new WB_Point(200, 250);
+        WB_Point p2 = new WB_Point(50, 1200);
+        WB_Point p3 = new WB_Point(1000, 1800);
+        WB_Point p4 = new WB_Point(1500, 1700);
+        WB_Point p5 = new WB_Point(1400, 0);
         List<WB_Point> list = new ArrayList<>();
         list.add(p1);
         list.add(p2);
         list.add(p3);
         list.add(p4);
+        list.add(p5);
         return list;
     }
 

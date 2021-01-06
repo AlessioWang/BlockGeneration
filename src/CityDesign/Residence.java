@@ -42,9 +42,9 @@ public class Residence implements Display {
     List<ResidenceBuilding> residenceBuildings;
     WB_Polygon greenOriginPolygon;
     Green green;
-    double dis1 = -170;
-    double dis2 = 70;
-    double roadDistance = 800;
+    double dis1 = -150;
+    double dis2 = 50;
+    double roadDistance = 1200;
     List<WB_PolyLine> roadLines;
 
 
@@ -384,7 +384,6 @@ public class Residence implements Display {
         for (int i = 0; i < this.allBuildingBoundarys.size(); i++) {
             WB_Polygon thisBuilding = allBuildingBoundarys.get(i);
             WB_Polygon closestB = findClosestBoundary(thisBuilding);
-            System.out.println(closestB.getSignedArea());
             ResidenceBuilding building = new ResidenceBuilding
                     (i, this.allBuildingBoundarys.get(i), floorNum, floorHeight, redLine, buildingGap, app);
             residenceBuildingList.add(building);
@@ -417,7 +416,6 @@ public class Residence implements Display {
     public void getRemovedBuilding() {
         double wholeDistance = Integer.MAX_VALUE;
         ResidenceBuilding removeBuilding = null;
-        System.out.println("size ; " + residenceBuildings.size());
         for (int j = 0; j < residenceBuildings.size(); j++) {
             double disTemp = 0;
             for (int i = 0; i < residenceBuildings.size(); i++) {
@@ -506,8 +504,6 @@ public class Residence implements Display {
 //        app.stroke(0, 255, 0);
 //        app.noFill();
 //        wb_render.drawPolygonEdges(greenOriginPolygon);
-
-
         app.strokeWeight(5);
         app.stroke(0,0,255);
 //        for (WB_PolyLine l : this.roadLines) {
