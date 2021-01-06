@@ -5,7 +5,6 @@ import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -22,8 +21,6 @@ public class Commercial implements Display {
     WB_Polygon redLine;
     double podiumHeight;
     double podFloorNum;
-    double towerHeight;
-    double towerFloorNum;
     WB_Polygon originRing;  //基础分割的带洞多边形
     WB_Polygon innerPolygon;
     List<WB_Point> controlP;    //控制点
@@ -44,11 +41,12 @@ public class Commercial implements Display {
     List<WB_PolyLine> greenRoadLines;
     Green green;
     List<BuildingVol> buildingVols;
-    int seed = 40;
+    int seed = 43;
+    int randomWidthLength = 50;
     Random random = new Random(seed);
 
 
-    public Commercial(WB_Polygon boundary, double redLineDis, double podH, double podN, double towH, double towN, PApplet applet) {
+    public Commercial(WB_Polygon boundary, double redLineDis, double podH, double podN, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
@@ -56,8 +54,6 @@ public class Commercial implements Display {
         this.redLine = getSingleBufferedPolygon(boundary, (redLineDis-roadWidth*0.5));
         this.podiumHeight = podH;
         this.podFloorNum = podN;
-        this.towerHeight = towH;
-        this.towerFloorNum = towN;
         this.originRing = W_Tools.getPolygonWithHoles(redLine, depth);
         this.innerPolygon = getSingleBufferedPolygon(redLine, depth);
         this.controlP = getAllCtrlP(innerPolygon, podMinWidth);
@@ -86,7 +82,6 @@ public class Commercial implements Display {
         heightList.add(42);
         heightList.add(39);
         int height = heightList.get((int) (Math.random()*heightList.size()));
-        System.out.println(height);
         return height;
     }
 
@@ -105,7 +100,7 @@ public class Commercial implements Display {
         WB_Point originP = line.getPoint(0);
         WB_Vector originV = W_Tools.getUnitVector(line.getPoint(1), line.getPoint(0));
         for (int i = 0; i < (n + 1); i++) {
-            WB_Point p = originP.add(originV.mul(i * width));
+            WB_Point p = originP.add(originV.mul(i *( width+(int)random.nextInt(randomWidthLength))));
             points.add(p);
         }
         points.add(line.getPoint(1));
@@ -148,7 +143,7 @@ public class Commercial implements Display {
         for (WB_Polygon p : div) {
             centers.add(p.getCenter());
         }
-        div = W_Tools.selPolygonsInRing(innerPolygon, div);
+        div = W_Tools.selPolygonsInRingByCenter(innerPolygon, div);
         for(WB_Polygon p : div){
             if(Math.abs(p.getSignedArea())>minBuildingArea){
                 if(random.nextFloat()>buildingRandom) {
@@ -162,7 +157,7 @@ public class Commercial implements Display {
     public List<WB_Polygon> getBuildingBoundarys(List<WB_Polygon> selPolygons, double roadWid) {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon polygon : selPolygons) {
-            out.addAll(gf.createBufferedPolygons(polygon, (-0.5) * (roadWid)));
+            out.addAll(gf.createBufferedPolygons(polygon, (-0.5) * (roadWid),0));
         }
         return out;
     }
@@ -206,12 +201,11 @@ public class Commercial implements Display {
 //        for (WB_Point p : cloP) {
 //            wb_render.drawPoint(p, 5);
 //        }
-        app.fill(0, 0, 100, 50);
+//        app.fill(0, 0, 100, 50);
         for (WB_Polygon p : buildingBoundarys) {
             wb_render.drawPolygonEdges(p);
         }
         app.fill(0, 120, 0, 30);
-//        wb_render.drawPolygonEdges(greenBoundary);
         green.display();
         for(BuildingVol bvl : buildingVols){
             bvl.display();

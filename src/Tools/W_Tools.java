@@ -263,7 +263,8 @@ public class W_Tools {
         return output;
     }
 
-    public static  List<WB_Polygon> selPolygonsInRing(WB_Polygon ring, List<WB_Polygon> polygons){
+    //选择polygons在多边形外
+    public static  List<WB_Polygon> selPolygonsInRingByCenter(WB_Polygon ring, List<WB_Polygon> polygons){
         List<WB_Polygon> selPolygons = new ArrayList<>();
         for(WB_Polygon polygon : polygons){
             WB_Point point = polygon.getCenter();
@@ -272,6 +273,22 @@ public class W_Tools {
             }
         }
         return selPolygons;
+    }
+
+    //选择polygons在多边形外
+    public static  List<WB_Polygon> selPolygonsInRingByPoint0 (WB_Polygon ring, List<WB_Polygon> polygons){
+        List<WB_Polygon> selPolygons = new ArrayList<>();
+        for(WB_Polygon polygon : polygons){
+            WB_Polygon poly = wbgf.createBufferedPolygons(polygon, -2).get(0);
+            WB_Point point = poly.getPoint(0);
+            if(!WB_GeometryOp.contains2D(point,ring)){
+                selPolygons.add(polygon);
+            }
+        }
+        return selPolygons;
+    }
+
+
     }
 
 
@@ -291,4 +308,4 @@ public class W_Tools {
 
 
 
-}
+

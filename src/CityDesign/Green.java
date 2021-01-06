@@ -37,7 +37,7 @@ public class Green implements Display {
     List<WB_Polygon> greenZoneWithRoad;
     double roadWidth = 30;
 
-
+    //住宅草地
     public Green(WB_Polygon originPolygon, double dis1, double dis2, List<WB_PolyLine> roadLines, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
@@ -53,6 +53,7 @@ public class Green implements Display {
 
     }
 
+    //商业地块的草地
     public Green(WB_Polygon originPolygon, List<WB_PolyLine> roadLines, double roadWidth, double minArea, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
@@ -60,6 +61,7 @@ public class Green implements Display {
         this.roadLines = roadLines;
         this.greenZoneWithRoad = getDivGreens(originPolygon, roadLines, minArea, roadWidth);
     }
+
 
 
     //商业
