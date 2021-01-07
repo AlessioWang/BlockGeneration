@@ -44,7 +44,7 @@ public class CityDesign extends PApplet {
         commercial = new Commercial
                 (commercialBoundary.outline, 60, 6, 300, this);
         st_zone = new ST_Zone
-                (commercialBoundary.outline, 80, 250, this);
+                (commercialBoundary.outline, 80, 270, this);
     }
 
     public void draw() {

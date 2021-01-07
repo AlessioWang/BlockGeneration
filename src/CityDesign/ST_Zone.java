@@ -23,14 +23,14 @@ public class ST_Zone implements Display {
     WB_Polygon redLine;
     double redLineDis;
     double depth;
-    int seed =4;
     WB_Polygon innerPolygon;
     List<WB_Point> ctrlP;
+    int seed = 7;
     double divLengthTol = 300;
     double minBuildingArea = 30000;
     double roadWidth = 90;
     double floorHeight = 30;
-    int maxGapNum = 2;
+    int maxGapNum = 3;
     List<WB_PolyLine> divLines;
     List<WB_Polygon> divPolygons;
     List<WB_Point> centers = new ArrayList<>();
@@ -60,7 +60,7 @@ public class ST_Zone implements Display {
         this.greenBoundary = getSingleBufferedPolygon(innerPolygon, greenDis - roadWidth);
         this.roads = getRoads(greenBoundary, 150);
         this.green = new Green(greenBoundary, roads, 30, 500, app);
-        System.out.println("*****" + green.greenZoneWithRoad.size());
+        System.out.println("Num of Greens"+ green.greenZoneWithRoad.size());
     }
 
     public List<BuildingVol> initialBuildingVol() {
@@ -113,7 +113,7 @@ public class ST_Zone implements Display {
         ringLines.add(redLine);
         ringLines.add(innerPolygon);
         List<WB_Polygon> div = W_Tools.splitPolygonWithPolylineList(ringLines, ls);
-        System.out.println("@@@" + div.size());
+        System.out.println("region number : " + div.size());
         for (WB_Polygon p : div) {
             centers.add(p.getCenter());
         }
@@ -127,7 +127,7 @@ public class ST_Zone implements Display {
     public List<WB_Polygon> getBuildingBoundarys(List<WB_Polygon> selPolygons, double roadWid) {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon polygon : selPolygons) {
-            if (gf.createBufferedPolygons(polygon, (-0.5) * (roadWid), 0).size()>0) {
+            if (gf.createBufferedPolygons(polygon, (-0.5) * (roadWid), 0).size() > 0) {
                 WB_Polygon beforeSel = gf.createBufferedPolygons(polygon, (-0.5) * (roadWid), 0).get(0);
                 if (Math.abs(beforeSel.getSignedArea()) > minBuildingArea) {
                     out.add(beforeSel);
@@ -146,15 +146,15 @@ public class ST_Zone implements Display {
                 points.add(seg.getCenter());
             }
         }
-        for (int i = 0; i < points.size() ; i += 1) {
+        for (int i = 0; i < points.size(); i += 1) {
             WB_Point p0 = points.get(i);
-            WB_Point p1 = points.get((i + 2) % points.size());
+            WB_Point p1 = points.get((i +2) % points.size());
+            System.out.println(p0  + " , " +  p1);
             lines.add(new WB_PolyLine(p0, p1));
         }
         System.out.println("roadLineNum : " + lines.size());
         return lines;
     }
-
 
     @Override
     public void display() {

@@ -95,7 +95,6 @@ public class Green implements Display {
             DouglasPeuckerSimplifier dgSim = new DouglasPeuckerSimplifier(polygon);
             dgSim.setDistanceTolerance(tol);
             polygon = (Polygon) dgSim.getResultGeometry();
-
             WB_Polygon outWbPolygon = W_Tools.JtsPolygonToWB_Polygon(polygon);
             output.add(outWbPolygon);
         }
@@ -127,7 +126,7 @@ public class Green implements Display {
 
     private List<WB_Polygon> getDividedGreens() {
         List<WB_Polygon> allPolygons = new ArrayList<>();
-        roadLines = W_Tools.getShortedPolylines(roadLines, 50);
+        roadLines = W_Tools.getShortedPolylines(roadLines, 200);
         allPolygons = W_Tools.splitPolygonWithPolylineList(greenZone, roadLines);
         return allPolygons;
     }
