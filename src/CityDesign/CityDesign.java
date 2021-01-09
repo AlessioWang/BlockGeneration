@@ -45,9 +45,9 @@ public class CityDesign extends PApplet {
         commercial = new Commercial
                 (commercialBoundary.outline, 60, 6, 300, this);
         st_zone = new ST_Zone
-                (commercialBoundary.outline, 80, 400, this);
+                (commercialBoundary.outline, 80, 400,6,this);
         st_zoneWithTower = new ST_Zone
-                (commercialBoundary.outline, 80, 400, 500,400,this);
+                (commercialBoundary.outline, 80, 400, 6, 500, 400,23, this);
 
     }
 
@@ -56,7 +56,7 @@ public class CityDesign extends PApplet {
 //-----------显示住宅-----------------
 //        residence.options();  //调用住宅的主方法
 //        residence.display();  //显示住宅
-//        boundary.display();   //住宅的display
+//        boundary.display();   //住宅的boundary
 //-----------显示商业-----------------
         commercialBoundary.display();
 //        commercial.display();

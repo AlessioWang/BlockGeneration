@@ -44,13 +44,14 @@ public class ST_Zone implements Display {
     List<WB_PolyLine> roads;
     Green green;
     int type;
-    double towerBufferDis = 40;
+    double towerBufferDis = 0;
     List<WB_Polygon> towersBoundaryRaw = new ArrayList<>();
     List<WB_Polygon> towersBoundaryCut = new ArrayList<>();
     List<BuildingVol> towerVols;
+    int podFloorNum;
 
 
-    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, PApplet applet) {
+    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
@@ -66,14 +67,14 @@ public class ST_Zone implements Display {
         this.divLines = getDivLine(outPolygon, ctrlP);
         this.divPolygons = getDivPolygon(divLines);
         this.buildingBoundary = getBuildingBoundarys(divPolygons, roadWidth);
-        this.buildingVols = initialBuildingVol(buildingBoundary, 6,0);
+        this.buildingVols = initialBuildingVol(buildingBoundary, podFloorNum, 0);
         this.greenBoundary = getSingleBufferedPolygon(innerPolygon, greenDis - roadWidth);
         this.roads = getRoads(greenBoundary, 300);
         this.green = new Green(greenBoundary, roads, 30, 500, app);
 
     }
 
-    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, double towerLength, double towerDepth, PApplet applet) {
+    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, double towerLength, double towerDepth, int towerFloorNum, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
@@ -89,7 +90,7 @@ public class ST_Zone implements Display {
         this.divLines = getDivLine(outPolygon, ctrlP);
         this.divPolygons = getDivPolygon(divLines);
         this.buildingBoundary = getBuildingBoundarys(divPolygons, roadWidth);
-        this.buildingVols = initialBuildingVol(buildingBoundary, 6,0);
+        this.buildingVols = initialBuildingVol(buildingBoundary, podFloorNum, 0);
         this.greenBoundary = getSingleBufferedPolygon(innerPolygon, greenDis - roadWidth);
         this.roads = getRoads(greenBoundary, 300);
         this.green = new Green(greenBoundary, roads, 30, 500, app);
@@ -97,7 +98,7 @@ public class ST_Zone implements Display {
         this.towerDepth = towerDepth;
         this.towersBoundaryRaw = getTowerBoundary(redLine, 800, towerDepth, towerLength);
         this.towersBoundaryCut = cutTower(towersBoundaryRaw, buildingBoundary);
-        this.towerVols = initialBuildingVol(towersBoundaryCut, 20,0);
+        this.towerVols = initialBuildingVol(towersBoundaryCut, towerFloorNum, 0);
     }
 
 
@@ -308,7 +309,7 @@ public class ST_Zone implements Display {
         for (WB_Polygon b : selPolygons) {
             if (Math.abs(b.getSignedArea()) > 100000) {
                 System.out.println("Area :" + Math.abs(b.getSignedArea()));
-                WB_Polygon sc = gf.createBufferedPolygons(b,-towerBufferDis).get(0);
+                WB_Polygon sc = gf.createBufferedPolygons(b, -towerBufferDis).get(0);
                 out.add(sc);
             }
         }

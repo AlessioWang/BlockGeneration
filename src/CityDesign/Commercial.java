@@ -27,7 +27,7 @@ public class Commercial implements Display {
     double roadWidth = 30;
     double depth = 200;
     double podMinWidth = 200;  //最小裙楼单元的宽度
-    double roadRandom = 0.05;
+    double roadRandom = 0.05;  //小路的个数
     double buildingRandom = 0.07;
     double minBuildingArea = 30000;
     double minGreenArea = 5000;
@@ -41,7 +41,7 @@ public class Commercial implements Display {
     List<WB_PolyLine> greenRoadLines;
     Green green;
     List<BuildingVol> buildingVols;
-    int seed = 43;
+    int seed = 4;
     int randomWidthLength = 50;
     Random random = new Random(seed);
 

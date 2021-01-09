@@ -159,7 +159,7 @@ public class BuildingVol implements Display {
     public void display() {
         app.pushStyle();
         app.strokeWeight(1);
-        app.fill(150);
+        app.fill(150,95);
         if (this.dis == 0) {
             wb_render.drawPolygon(outline);
             for (WB_Polygon p : walls) {

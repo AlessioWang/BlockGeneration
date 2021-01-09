@@ -136,7 +136,13 @@ public class Green implements Display {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon green : greens) {
             if (green != null) {
-                out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
+//                out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
+                List<WB_Polygon> grns = gf.createBufferedPolygons(green, width * (-0.5));
+                for(WB_Polygon g : grns){
+                    if(Math.abs(g.getSignedArea())>4000){
+                        out.add(g);
+                    }
+                }
             }
         }
         return out;
