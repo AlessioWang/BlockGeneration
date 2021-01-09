@@ -27,9 +27,10 @@ public class CityDesign extends PApplet {
     Residence residence;
     Commercial commercial;
     ST_Zone st_zone;
+    ST_Zone st_zoneWithTower;
 
     public void settings() {
-        size(1200, 1200, P3D);
+        size(1000, 1000, P3D);
     }
 
     public void setup() {
@@ -44,7 +45,10 @@ public class CityDesign extends PApplet {
         commercial = new Commercial
                 (commercialBoundary.outline, 60, 6, 300, this);
         st_zone = new ST_Zone
-                (commercialBoundary.outline, 80, 270, this);
+                (commercialBoundary.outline, 80, 400, this);
+        st_zoneWithTower = new ST_Zone
+                (commercialBoundary.outline, 80, 400, 500,400,this);
+
     }
 
     public void draw() {
@@ -57,7 +61,8 @@ public class CityDesign extends PApplet {
         commercialBoundary.display();
 //        commercial.display();
 //-----------显示科技园区-----------------
-        st_zone.display();
+//        st_zone.display();
+        st_zoneWithTower.display();
     }
 
 

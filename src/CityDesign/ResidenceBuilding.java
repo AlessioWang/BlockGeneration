@@ -158,7 +158,7 @@ public class ResidenceBuilding implements Display {
     }
 
     public void initialVols(){
-        buildingVols = new BuildingVol(boundary,floorHeight,floorNum,app);
+        buildingVols = new BuildingVol(boundary,floorHeight,floorNum,0,app);
     }
 
     @Override

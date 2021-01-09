@@ -51,7 +51,7 @@ public class Commercial implements Display {
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.boundary = boundary;
-        this.redLine = getSingleBufferedPolygon(boundary, (redLineDis-roadWidth*0.5));
+        this.redLine = getSingleBufferedPolygon(boundary, (redLineDis - roadWidth * 0.5));
         this.podiumHeight = podH;
         this.podFloorNum = podN;
         this.originRing = W_Tools.getPolygonWithHoles(redLine, depth);
@@ -60,28 +60,28 @@ public class Commercial implements Display {
         this.divLine = getDivLine(redLine, controlP);
         this.divPolygon = getDivPolygon(divLine);
         this.buildingBoundarys = getBuildingBoundarys(divPolygon, roadWidth);
-        this.greenBoundary = getSingleBufferedPolygon(innerPolygon, roadWidth*1.5);
+        this.greenBoundary = getSingleBufferedPolygon(innerPolygon, roadWidth * 1.5);
         this.greenRoadLines = getGreenRoadLines(buildingBoundarys, greenBoundary);
         this.green = new Green(greenBoundary, greenRoadLines, 15, minGreenArea, app);
         this.buildingVols = initialBuildingVol();
     }
 
-    public List<BuildingVol> initialBuildingVol(){
+    public List<BuildingVol> initialBuildingVol() {
         List<BuildingVol> buildingVols = new ArrayList<>();
-        for(WB_Polygon b: buildingBoundarys){
-            BuildingVol bvl= new BuildingVol(b,setHeight(),6,app);
+        for (WB_Polygon b : buildingBoundarys) {
+            BuildingVol bvl = new BuildingVol(b, setHeight(), 6, 0, app);
             buildingVols.add(bvl);
         }
         return buildingVols;
     }
 
-    public Integer setHeight (){
+    public Integer setHeight() {
         List<Integer> heightList = new ArrayList<>();
         heightList.add(30);
         heightList.add(36);
         heightList.add(42);
         heightList.add(39);
-        int height = heightList.get((int) (Math.random()*heightList.size()));
+        int height = heightList.get((int) (Math.random() * heightList.size()));
         return height;
     }
 
@@ -100,7 +100,7 @@ public class Commercial implements Display {
         WB_Point originP = line.getPoint(0);
         WB_Vector originV = W_Tools.getUnitVector(line.getPoint(1), line.getPoint(0));
         for (int i = 0; i < (n + 1); i++) {
-            WB_Point p = originP.add(originV.mul(i *( width+(int)random.nextInt(randomWidthLength))));
+            WB_Point p = originP.add(originV.mul(i * (width + (int) random.nextInt(randomWidthLength))));
             points.add(p);
         }
         points.add(line.getPoint(1));
@@ -144,9 +144,9 @@ public class Commercial implements Display {
             centers.add(p.getCenter());
         }
         div = W_Tools.selPolygonsInRingByCenter(innerPolygon, div);
-        for(WB_Polygon p : div){
-            if(Math.abs(p.getSignedArea())>minBuildingArea){
-                if(random.nextFloat()>buildingRandom) {
+        for (WB_Polygon p : div) {
+            if (Math.abs(p.getSignedArea()) > minBuildingArea) {
+                if (random.nextFloat() > buildingRandom) {
                     polygons.add(p);
                 }
             }
@@ -157,7 +157,7 @@ public class Commercial implements Display {
     public List<WB_Polygon> getBuildingBoundarys(List<WB_Polygon> selPolygons, double roadWid) {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon polygon : selPolygons) {
-            out.addAll(gf.createBufferedPolygons(polygon, (-0.5) * (roadWid),0));
+            out.addAll(gf.createBufferedPolygons(polygon, (-0.5) * (roadWid), 0));
         }
         return out;
     }
@@ -185,7 +185,6 @@ public class Commercial implements Display {
     }
 
 
-
     @Override
     public void display() {
         app.pushStyle();
@@ -207,7 +206,7 @@ public class Commercial implements Display {
         }
         app.fill(0, 120, 0, 30);
         green.display();
-        for(BuildingVol bvl : buildingVols){
+        for (BuildingVol bvl : buildingVols) {
             bvl.display();
         }
         app.popStyle();

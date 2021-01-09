@@ -116,6 +116,21 @@ public class W_Tools {
         return new WB_Polygon(points).getSimplePolygon();
     }
 
+    public static WB_Point wb_point2Coord(WB_Coord coord) {
+        return new WB_Point(coord.xd(), coord.yd());
+    }
+
+
+    public static List<WB_Point> wb_pointsList2CoordList(List<WB_Coord> coords) {
+        List<WB_Point> pts = new ArrayList<>();
+        for (WB_Coord c : coords) {
+            pts.add(wb_point2Coord(c));
+        }
+        return pts;
+    }
+
+
+
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
         if (wbp.getNumberOfHoles() == 0) {
             if (wbp.getPoint(0).equals(wbp.getPoint(wbp.getNumberOfPoints() - 1))) {
@@ -264,11 +279,11 @@ public class W_Tools {
     }
 
     //选择polygons在多边形外
-    public static  List<WB_Polygon> selPolygonsInRingByCenter(WB_Polygon ring, List<WB_Polygon> polygons){
+    public static List<WB_Polygon> selPolygonsInRingByCenter(WB_Polygon ring, List<WB_Polygon> polygons) {
         List<WB_Polygon> selPolygons = new ArrayList<>();
-        for(WB_Polygon polygon : polygons){
+        for (WB_Polygon polygon : polygons) {
             WB_Point point = polygon.getCenter();
-            if(!WB_GeometryOp.contains2D(point,ring)){
+            if (!WB_GeometryOp.contains2D(point, ring)) {
                 selPolygons.add(polygon);
             }
         }
@@ -276,20 +291,24 @@ public class W_Tools {
     }
 
     //选择polygons在多边形外
-    public static  List<WB_Polygon> selPolygonsInRingByPoint0 (WB_Polygon ring, List<WB_Polygon> polygons){
+    public static List<WB_Polygon> selPolygonsInRingByPoint0(WB_Polygon ring, List<WB_Polygon> polygons) {
         List<WB_Polygon> selPolygons = new ArrayList<>();
-        for(WB_Polygon polygon : polygons){
-            WB_Polygon poly = wbgf.createBufferedPolygons(polygon, -2).get(0);
-            WB_Point point = poly.getPoint(0);
-            if(!WB_GeometryOp.contains2D(point,ring)){
-                selPolygons.add(polygon);
+        for (WB_Polygon polygon : polygons) {
+            if (polygon.getNumberSegments() > 2) {
+                System.out.println("pointInPolygon : " + polygon.getPoint(1));
+                System.out.println("pointsNumInPolygon : " + polygon.getNumberOfPoints());
+                WB_Polygon poly = wbgf.createBufferedPolygons(polygon, -1).get(0);
+                WB_Point point = poly.getPoint(0);
+                if (!WB_GeometryOp.contains2D(point, ring)) {
+                    selPolygons.add(polygon);
+                }
             }
         }
         return selPolygons;
     }
 
 
-    }
+}
 
 
 
