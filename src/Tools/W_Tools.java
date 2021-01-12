@@ -12,19 +12,19 @@ import java.util.List;
 
 /**
  * @auther Alessio
+ * 部分方法收录了同门Baizhou Zhang（github@Agent14zbz）的Z_Tools方法，在此表示感谢！
+ * 部分方法借鉴请教了学长Wenrui Zhao（github@Naturalpowder）的思路，在此表示感谢！
  * @date 2020/12/24
  **/
+
 public class W_Tools {
     private static GeometryFactory gf = new GeometryFactory();
     private static WB_GeometryFactory wbgf = new WB_GeometryFactory();
 
     //计算两点的距离
-
-
     static public double getDistance(WB_Point a, WB_Point b) {
         return Math.sqrt((a.xd() - b.xd()) * (a.xd() - b.xd()) + (a.yd() - b.yd()) * (a.yd() - b.yd()));
     }
-
 
     //计算quad的最长边
     static public WB_Point getLongestSide(WB_Quad quad) {
@@ -128,7 +128,6 @@ public class W_Tools {
         }
         return pts;
     }
-
 
 
     public static Polygon WB_PolygonToJtsPolygon(final WB_Polygon wbp) {
@@ -278,6 +277,84 @@ public class W_Tools {
         return output;
     }
 
+
+    /**
+     * WB_Polygon 点序反向（支持带洞）
+     *
+     * @param original input polygon
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon reversePolygon(final WB_Polygon original) {
+        if (original.getNumberOfHoles() == 0) {
+            WB_Point[] newPoints = new WB_Point[original.getNumberOfPoints()];
+            for (int i = 0; i < newPoints.length; i++) {
+                newPoints[i] = original.getPoint(newPoints.length - 1 - i);
+            }
+            return new WB_Polygon(newPoints);
+        } else {
+            WB_Point[] newExteriorPoints = new WB_Point[original.getNumberOfShellPoints()];
+            for (int i = 0; i < original.getNumberOfShellPoints(); i++) {
+                newExteriorPoints[i] = original.getPoint(original.getNumberOfShellPoints() - 1 - i);
+            }
+
+            final int[] npc = original.getNumberOfPointsPerContour();
+            int index = npc[0];
+            WB_Point[][] newInteriorPoints = new WB_Point[original.getNumberOfHoles()][];
+
+            for (int i = 0; i < original.getNumberOfHoles(); i++) {
+                WB_Point[] newHole = new WB_Point[npc[i + 1]];
+                for (int j = 0; j < newHole.length; j++) {
+                    newHole[j] = new WB_Point(original.getPoint(newHole.length - 1 - j + index));
+                }
+                newInteriorPoints[i] = newHole;
+                index = index + npc[i + 1];
+            }
+
+            return new WB_Polygon(newExteriorPoints, newInteriorPoints);
+        }
+    }
+
+
+    /**
+     * 检查两个WB_Polygon是否同向
+     *
+     * @param p1 polygon1
+     * @param p2 polygon2
+     * @return boolean
+     */
+    public static boolean isNormalEquals(final WB_Polygon p1, final WB_Polygon p2) {
+        return p1.getNormal().equals(p2.getNormal());
+    }
+
+    /**
+     * 让WB_Polygon法向量朝向Z轴正向（支持带洞）
+     *
+     * @param polygon input polygon
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon polygonFaceUp(final WB_Polygon polygon) {
+        if (polygon.getNormal().zd() < 0) {
+            return reversePolygon(polygon);
+        } else {
+            return polygon;
+        }
+    }
+
+    /**
+     * 让WB_Polygon法向量朝向Z轴负向（支持带洞）
+     *
+     * @param polygon input polygon
+     * @return wblut.geom.WB_Polygon
+     */
+    public static WB_Polygon polygonFaceDown(final WB_Polygon polygon) {
+        if (polygon.getNormal().zd() > 0) {
+            return reversePolygon(polygon);
+        } else {
+            return polygon;
+        }
+    }
+
+
     //选择polygons在多边形外
     public static List<WB_Polygon> selPolygonsInRingByCenter(WB_Polygon ring, List<WB_Polygon> polygons) {
         List<WB_Polygon> selPolygons = new ArrayList<>();
@@ -295,8 +372,8 @@ public class W_Tools {
         List<WB_Polygon> selPolygons = new ArrayList<>();
         for (WB_Polygon polygon : polygons) {
             if (polygon.getNumberSegments() > 2) {
-                System.out.println("pointInPolygon : " + polygon.getPoint(1));
-                System.out.println("pointsNumInPolygon : " + polygon.getNumberOfPoints());
+//                System.out.println("pointInPolygon : " + polygon.getPoint(1));
+//                System.out.println("pointsNumInPolygon : " + polygon.getNumberOfPoints());
                 WB_Polygon poly = wbgf.createBufferedPolygons(polygon, -1).get(0);
                 WB_Point point = poly.getPoint(0);
                 if (!WB_GeometryOp.contains2D(point, ring)) {

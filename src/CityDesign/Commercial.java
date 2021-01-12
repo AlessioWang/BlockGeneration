@@ -1,6 +1,7 @@
 package CityDesign;
 
 import Tools.W_Tools;
+import org.apache.batik.dom.util.DOMUtilities;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;
@@ -24,13 +25,14 @@ public class Commercial implements Display {
     WB_Polygon originRing;  //基础分割的带洞多边形
     WB_Polygon innerPolygon;
     List<WB_Point> controlP;    //控制点
-    double roadWidth = 30;
-    double depth = 200;
+    double roadWidth = 20;
+    double depth = 170;
     double podMinWidth = 200;  //最小裙楼单元的宽度
     double roadRandom = 0.05;  //小路的个数
-    double buildingRandom = 0.07;
-    double minBuildingArea = 30000;
+    double buildingRandom = 0.001;
+    double minBuildingArea = 20000;
     double minGreenArea = 5000;
+    int roadNum = 4;
     List<WB_PolyLine> divLine;
     List<WB_Point> cloP = new ArrayList<>();
     List<WB_Polygon> divPolygon = new ArrayList<>();
@@ -41,7 +43,7 @@ public class Commercial implements Display {
     List<WB_PolyLine> greenRoadLines;
     Green green;
     List<BuildingVol> buildingVols;
-    int seed = 4;
+    int seed =5;
     int randomWidthLength = 50;
     Random random = new Random(seed);
 
@@ -51,6 +53,7 @@ public class Commercial implements Display {
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.boundary = boundary;
+        setPara(boundary);
         this.redLine = getSingleBufferedPolygon(boundary, (redLineDis - roadWidth * 0.5));
         this.podiumHeight = podH;
         this.podFloorNum = podN;
@@ -60,10 +63,52 @@ public class Commercial implements Display {
         this.divLine = getDivLine(redLine, controlP);
         this.divPolygon = getDivPolygon(divLine);
         this.buildingBoundarys = getBuildingBoundarys(divPolygon, roadWidth);
-        this.greenBoundary = getSingleBufferedPolygon(innerPolygon, roadWidth * 1.5);
-        this.greenRoadLines = getGreenRoadLines(buildingBoundarys, greenBoundary);
+        this.greenBoundary =  getSingleBufferedPolygon(innerPolygon, roadWidth * 1.3);
+        this.greenRoadLines = getGreenRoadLines(buildingBoundarys, greenBoundary, roadNum);
         this.green = new Green(greenBoundary, greenRoadLines, 15, minGreenArea, app);
         this.buildingVols = initialBuildingVol();
+    }
+
+    public void setPara(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 350000) {
+            depth = 150;
+            roadWidth = 15;
+            minGreenArea = 2500;
+            minBuildingArea = 15000;
+            roadNum = 2;
+        } else if (area >= 350000 && area < 55000) {
+            depth = 160;
+            roadWidth = 17;
+            minGreenArea = 3000;
+            minBuildingArea = 17000;
+            roadNum = 3;
+        } else if (area >= 550000 && area < 80000) {
+            depth = 170;
+            roadWidth = 18;
+            minGreenArea = 3000;
+            minBuildingArea = 17000;
+            roadNum = 4;
+        } else if (area >= 800000 && area < 110000) {
+            depth = 180;
+            roadWidth = 20;
+            minGreenArea = 4000;
+            minBuildingArea = 17000;
+            roadNum = 5;
+        } else if (area >= 110000 && area < 150000) {
+            depth = 190;
+            roadWidth = 20;
+            minGreenArea = 4000;
+            minBuildingArea = 18000;
+            roadNum = 6;
+        }else {
+            depth = 200;
+            roadWidth = 20;
+            minGreenArea = 4000;
+            minBuildingArea = 20000;
+            roadNum = 7;
+        }
+
     }
 
     public List<BuildingVol> initialBuildingVol() {
@@ -134,7 +179,7 @@ public class Commercial implements Display {
     //选出建筑边界的polygon，经过面积筛选以及随机去建筑
     public List<WB_Polygon> getDivPolygon(List<WB_PolyLine> lines) {
         List<WB_Polygon> polygons = new ArrayList<>();
-        List<WB_PolyLine> ls = W_Tools.getShortedPolylines(lines, (-10));
+        List<WB_PolyLine> ls = W_Tools.getShortedPolylines(lines, (-80));
         test.addAll(ls);
         List<WB_Polygon> ringLines = new ArrayList<>();
         ringLines.add(redLine);
@@ -162,7 +207,7 @@ public class Commercial implements Display {
         return out;
     }
 
-    public List<WB_PolyLine> getGreenRoadLines(List<WB_Polygon> buildings, WB_Polygon green) {
+    public List<WB_PolyLine> getGreenRoadLines(List<WB_Polygon> buildings, WB_Polygon green, int num) {
         List<WB_PolyLine> greenLines = new ArrayList<>();
         List<WB_Point> clP = new ArrayList<>();
         List<WB_Coord> pts = green.getPoints().toList();
@@ -176,12 +221,18 @@ public class Commercial implements Display {
         for (int i = 0; i < clP.size(); i++) {
             for (int j = 1; j < clP.size(); j++) {
                 WB_PolyLine line = new WB_PolyLine(clP.get(i), clP.get(j));
-                if (random.nextFloat() < roadRandom) {
-                    greenLines.add(line);
-                }
+//                if (random.nextFloat() < roadRandom) {
+//                    greenLines.add(line);
+//                }
+                greenLines.add(line);
             }
         }
-        return greenLines;
+        List<WB_PolyLine> ls = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            ls.add(greenLines.get(random.nextInt(greenLines.size())));
+        }
+
+        return ls;
     }
 
 

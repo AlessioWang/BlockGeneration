@@ -128,7 +128,7 @@ public class ST_Zone implements Display {
                 }
             }
         }
-        System.out.println(pts.size());
+//        System.out.println(pts.size());
         return pts;
     }
 
@@ -153,7 +153,7 @@ public class ST_Zone implements Display {
         ringLines.add(outPolygon);
         ringLines.add(innerPolygon);
         List<WB_Polygon> div = W_Tools.splitPolygonWithPolylineList(ringLines, ls);
-        System.out.println("region number : " + div.size());
+//        System.out.println("region number : " + div.size());
         for (WB_Polygon p : div) {
             centers.add(p.getCenter());
         }
@@ -189,10 +189,10 @@ public class ST_Zone implements Display {
         for (int i = 0; i < points.size(); i += 1) {
             WB_Point p0 = points.get(i);
             WB_Point p1 = points.get((i + 2) % points.size());
-            System.out.println(p0 + " , " + p1);
+//            System.out.println(p0 + " , " + p1);
             lines.add(new WB_PolyLine(p0, p1));
         }
-        System.out.println("roadLineNum : " + lines.size());
+//        System.out.println("roadLineNum : " + lines.size());
         return lines;
     }
 
@@ -234,18 +234,18 @@ public class ST_Zone implements Display {
                 selSeg = seg;
             }
         }
-        System.out.println(selSeg.getEndpoint());
+//        System.out.println(selSeg.getEndpoint());
         return selSeg;
     }
 
     public WB_Polygon getRotatePolygon(WB_Polygon rect, WB_Polygon boundary) {
         WB_Segment basedSeg = selRotateBasedSeg(rect, boundary);
-        System.out.println("segP0 : " + basedSeg.getOrigin());
+//        System.out.println("segP0 : " + basedSeg.getOrigin());
         WB_Segment line = rect.getSegment(0);    //基准线
         WB_Vector v0 = W_Tools.getUnitVector((WB_Point) basedSeg.getEndpoint(), (WB_Point) basedSeg.getOrigin());
         WB_Vector v1 = W_Tools.getUnitVector((WB_Point) line.getEndpoint(), (WB_Point) line.getOrigin());
-        System.out.println("v0 : " + v0);
-        System.out.println("v1 : " + v1);
+//        System.out.println("v0 : " + v0);
+//        System.out.println("v1 : " + v1);
         WB_Vector vector = v0.cross(v1);
         double angle = 0;
         if (vector.zd() > 0) {
@@ -308,7 +308,7 @@ public class ST_Zone implements Display {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon b : selPolygons) {
             if (Math.abs(b.getSignedArea()) > 100000) {
-                System.out.println("Area :" + Math.abs(b.getSignedArea()));
+//                System.out.println("Area :" + Math.abs(b.getSignedArea()));
                 WB_Polygon sc = gf.createBufferedPolygons(b, -towerBufferDis).get(0);
                 out.add(sc);
             }

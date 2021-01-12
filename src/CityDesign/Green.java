@@ -45,7 +45,7 @@ public class Green implements Display {
         this.dis1 = dis1;
         this.dis2 = dis2;
         this.basicPolygon = setBasicPolygon();
-        this.simplyPolygons = simply(this.basicPolygon, 20);
+        this.simplyPolygons = simply(this.basicPolygon, 30);
         this.greenZone = setGreenZone();
         this.roadLines = roadLines;
         this.dividedGreens = getDividedGreens();
@@ -139,7 +139,7 @@ public class Green implements Display {
 //                out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
                 List<WB_Polygon> grns = gf.createBufferedPolygons(green, width * (-0.5));
                 for(WB_Polygon g : grns){
-                    if(Math.abs(g.getSignedArea())>4000){
+                    if(Math.abs(g.getSignedArea())>3000){
                         out.add(g);
                     }
                 }
