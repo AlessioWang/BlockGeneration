@@ -41,8 +41,18 @@ public class CityDesign extends PApplet {
     List<WB_Polygon> lake = new ArrayList<>();
     List<WB_Polygon> commercialPolygon = new ArrayList<>();
     List<WB_Polygon> residentPolygon = new ArrayList<>();
+    List<WB_Polygon> residentTest = new ArrayList<>();
+    List<WB_Polygon> towerBoundary = new ArrayList<>();
+    List<WB_Polygon> stZoneBoundary = new ArrayList<>();
+    List<WB_Polygon> pointResidenceBoundary = new ArrayList<>();
+    List<WB_Polygon> publicPlace= new ArrayList<>();
+
+    //建筑图元
     List<Commercial> commercialList = new ArrayList<>();
     List<Residence> residenceList = new ArrayList<>();
+    List<Residence> pointResidences = new ArrayList<>();
+    List<ST_Zone> towers = new ArrayList<>();
+    List<ST_Zone> stZones = new ArrayList<>();
 
     public void settings() {
         size(1000, 1000, P3D);
@@ -61,7 +71,12 @@ public class CityDesign extends PApplet {
         landscape = dxfImporter.getPolygons("3_landscape");
         landscapeLine = dxfImporter.getPolyLines("3_landscape");
         residentPolygon = dxfImporter.getPolygons("resident");
-        System.out.println(residentPolygon.size());
+        residentTest = dxfImporter.getPolygons("residentTest");
+        towerBoundary = dxfImporter.getPolygons("tower");
+        stZoneBoundary = dxfImporter.getPolygons("stZone");
+        pointResidenceBoundary = dxfImporter.getPolygons("point");
+        publicPlace = dxfImporter.getPolygons("3_public");
+
 
         for (int i = 0; i < commercialPolygon.size(); i++) {
             WB_Polygon p = W_Tools.polygonFaceDown(commercialPolygon.get(i));
@@ -70,12 +85,30 @@ public class CityDesign extends PApplet {
             commercialList.add(commercialSingle);
         }
 
-//        for (int i = 0; i < residentPolygon.size(); i++) {
-//            WB_Polygon p = W_Tools.polygonFaceDown(residentPolygon.get(i));
-//            System.out.println("index : " + i);
-//            Residence residence = new Residence(p, 100, 500, 150, 1, 30, 100, 10, this);
-//            residenceList.add(residence);
-//        }
+        for (int i = 0; i < residentTest.size(); i++) {
+            WB_Polygon p = W_Tools.polygonFaceDown(residentTest.get(i));
+            Residence residence = new Residence(p, 80, 550, 150, 0.8, 30, 90, 12, this);
+            residenceList.add(residence);
+        }
+
+        for (int i = 0; i < pointResidenceBoundary.size(); i++) {
+            WB_Polygon p = W_Tools.polygonFaceDown(pointResidenceBoundary.get(i));
+            Residence residence = new Residence(p, 80, 250, 180, 0.6, 30, 90, 15, this);
+            pointResidences.add(residence);
+        }
+
+        for (WB_Polygon p : towerBoundary) {
+            WB_Polygon p1 = W_Tools.polygonFaceDown(p);
+            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 3,this);
+            towers.add(tower);
+        }
+
+        for (WB_Polygon p : stZoneBoundary) {
+            WB_Polygon p1 = W_Tools.polygonFaceDown(p);
+            ST_Zone zone = new ST_Zone(p1, 50, 160, 6,3, this);
+            stZones.add(zone);
+        }
+
 
 //        residence = new Residence
 //                (boundary.outline, 100, 500, 150, 1, 30, 100, 10, this);
@@ -104,6 +137,10 @@ public class CityDesign extends PApplet {
         for (WB_PolyLine p : blocksAxis) {
             render.drawPolylineEdges(p);
         }
+
+        for (WB_Polygon p : residentTest) {
+            render.drawPolygonEdges(p);
+        }
         //水体
         stroke(0, 0, 200);
         for (WB_PolyLine p : lake) {
@@ -122,16 +159,34 @@ public class CityDesign extends PApplet {
         for (WB_PolyLine p : landscapeLine) {
             render.drawPolylineEdges(p);
         }
+
+        fill(20,100,150,40);
+        for (WB_Polygon p : publicPlace) {
+            render.drawPolygonEdges(p);
+        }
         popStyle();
 
         for (Commercial c : commercialList) {
             c.display();
         }
 
-//        for (Residence c : residenceList) {
-//            c.options();  //调用住宅的主方法`
-//            c.display();
-//        }
+        for (Residence c : residenceList) {
+            c.options();  //调用住宅的主方法
+            c.display();
+        }
+
+        for (Residence c : pointResidences) {
+            c.options();  //调用住宅的主方法
+            c.display();
+        }
+
+        for (ST_Zone z : towers) {
+            z.display();
+        }
+
+        for (ST_Zone z : stZones) {
+            z.display();
+        }
 
 
     }

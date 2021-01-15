@@ -26,7 +26,7 @@ public class Residence implements Display {
     double wholeHeight;
     double buildingGap;
     double widthDis;        //横向之间的楼间距
-    double angleTol = Math.PI * 0.05;   //转变摆放方式的角度阈值
+    double angleTol = Math.PI * 0.07;   //转变摆放方式的角度阈值
     WB_PolyLine controlLineNorth;
     WB_PolyLine controlLineSouth;
     List<WB_PolyLine> controlLines;
@@ -77,7 +77,9 @@ public class Residence implements Display {
         this.allBuildingBoundarys = getAllBuildingBoundarys();
         residenceBuildings = initialResidenceBuildings();
         turnIfInRed(residenceBuildings);
-        getRemovedBuilding();
+        if (residenceBuildings.size() > 7) {
+            getRemovedBuilding();
+        }
         greenOriginPolygon = new WB_Polygon();
 //        initialGreen();
         roadLines = getRoadLine();
@@ -96,9 +98,10 @@ public class Residence implements Display {
             }
         }
         this.creatPolygonWithHoles();
-        this.initialGreen();
         this.moveBuildings();
-        for (ResidenceBuilding b: residenceBuildings) {
+        this.initialGreen();
+
+        for (ResidenceBuilding b : residenceBuildings) {
             b.initialVols();
         }
 //        this.roadLines = this.getRoadLine();
@@ -490,10 +493,12 @@ public class Residence implements Display {
         app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.redLine);
         app.stroke(100, 0, 0, 50);
+
         //画控制线
         for (WB_PolyLine l : this.controlLines) {
             wb_render.drawPolyLine(l);
         }
+
         //画点
         app.noStroke();
         app.fill(0, 0, 100);
@@ -501,11 +506,13 @@ public class Residence implements Display {
         for (ResidenceBuilding building : residenceBuildings) {
             building.display();
         }
+
+
 //        app.stroke(0, 255, 0);
 //        app.noFill();
 //        wb_render.drawPolygonEdges(greenOriginPolygon);
         app.strokeWeight(5);
-        app.stroke(0,0,255);
+        app.stroke(0, 0, 255);
 //        for (WB_PolyLine l : this.roadLines) {
 //            wb_render.drawPolyLine(l);
 //        }

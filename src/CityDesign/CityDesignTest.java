@@ -53,23 +53,23 @@ public class CityDesignTest extends PApplet {
         commercial = new Commercial
                 (commercialBoundary.outline, 60, 6, 300, this);
         st_zone = new ST_Zone
-                (commercialBoundary.outline, 80, 400, 6, this);
+                (commercialBoundary.outline, 80, 400, 6,4, this);
         st_zoneWithTower = new ST_Zone
-                (commercialBoundary.outline, 80, 400, 6, 500, 400, 23, this);
+                (commercialBoundary.outline, 80, 400, 6, 500, 400, 23,3, this);
 
     }
 
     public void draw() {
         background(255);
 //-----------显示住宅-----------------
-        residence.options();  //调用住宅的主方法
-        residence.display();  //显示住宅
-        boundary.display();   //住宅的boundary
+//        residence.options();  //调用住宅的主方法
+//        residence.display();  //显示住宅
+//        boundary.display();   //住宅的boundary
 //-----------显示商业-----------------
 //        commercialBoundary.display();
 //        commercial.display();
 //-----------显示科技园区-----------------
-//        st_zone.display();
+        st_zone.display();
 //        st_zoneWithTower.display();
     }
 

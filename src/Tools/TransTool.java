@@ -52,7 +52,7 @@ public class TransTool {
         WB_Polygon exterior = TransTool.toWB_PolygonExterior((Polygon) geometry);
         Douglas douglas = new Douglas(exterior, .1);
         List<WB_Coord> out_pts = douglas.getTransPolygon().getPoints().toList();
-        System.out.println(out_pts);
+//        System.out.println(out_pts);
         return new WB_Polygon(out_pts, pts);
     }
 

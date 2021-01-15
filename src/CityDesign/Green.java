@@ -14,6 +14,7 @@ import wblut.processing.WB_Render;
 import java.lang.reflect.Modifier;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class Green implements Display {
     List<WB_Polygon> dividedGreens;
     List<WB_Polygon> greenZoneWithRoad;
     double roadWidth = 30;
+    List<WB_Point> allp = new ArrayList<>();
 
     //住宅草地
     public Green(WB_Polygon originPolygon, double dis1, double dis2, List<WB_PolyLine> roadLines, PApplet applet) {
@@ -49,9 +51,11 @@ public class Green implements Display {
         this.greenZone = setGreenZone();
         this.roadLines = roadLines;
         this.dividedGreens = getDividedGreens();
-        this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens, roadWidth);
-
+//        this.greenZoneWithRoad = getGreenZoneWithRoad(this.dividedGreens, roadWidth);
+        this.allp = getAllP();
+//        System.out.println("div : " + dividedGreens.size());
     }
+
 
     //商业地块的草地
     public Green(WB_Polygon originPolygon, List<WB_PolyLine> roadLines, double roadWidth, double minArea, PApplet applet) {
@@ -62,6 +66,17 @@ public class Green implements Display {
         this.greenZoneWithRoad = getDivGreens(originPolygon, roadLines, minArea, roadWidth);
     }
 
+
+    public List<WB_Point> getAllP() {
+        List<WB_Point> allp = new ArrayList<>();
+        for (WB_Polygon p : dividedGreens) {
+            List<WB_Coord> cs = p.getPoints().toList();
+            for (WB_Coord c : cs) {
+                allp.add((WB_Point) c);
+            }
+        }
+        return allp;
+    }
 
 
     //商业
@@ -125,9 +140,15 @@ public class Green implements Display {
 //    }
 
     private List<WB_Polygon> getDividedGreens() {
+        List<WB_Polygon>out = new ArrayList<>();
         List<WB_Polygon> allPolygons = new ArrayList<>();
-        roadLines = W_Tools.getShortedPolylines(roadLines, 200);
+        roadLines = W_Tools.getShortedPolylines(roadLines, 250);
         allPolygons = W_Tools.splitPolygonWithPolylineList(greenZone, roadLines);
+        for (WB_Polygon g : allPolygons) {
+            if (Math.abs(g.getSignedArea()) > 2000) {
+                out.add(g);
+            }
+        }
         return allPolygons;
     }
 
@@ -136,10 +157,9 @@ public class Green implements Display {
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon green : greens) {
             if (green != null) {
-//                out.addAll(gf.createBufferedPolygons(green, width * (-0.5)));
                 List<WB_Polygon> grns = gf.createBufferedPolygons(green, width * (-0.5));
-                for(WB_Polygon g : grns){
-                    if(Math.abs(g.getSignedArea())>3000){
+                for (WB_Polygon g : grns) {
+                    if (Math.abs(g.getSignedArea()) > 3000) {
                         out.add(g);
                     }
                 }
@@ -164,9 +184,24 @@ public class Green implements Display {
 //        for (WB_PolyLine l : roadLines) {
 //            wb_render.drawPolylineEdges(l);
 //        }
-        for (WB_Polygon polygon : greenZoneWithRoad) {
-            wb_render.drawPolygonEdges(polygon);
+
+
+        if (dividedGreens != null) {
+            for (WB_Polygon polygon : dividedGreens) {
+                wb_render.drawPolygonEdges(polygon);
+            }
         }
+
+        if (greenZoneWithRoad != null) {
+            for (WB_Polygon polygon : greenZoneWithRoad) {
+                wb_render.drawPolygonEdges(polygon);
+            }
+        }
+
+//        for (WB_Point p : allp) {
+//            wb_render.drawPoint(p,20);
+//        }
+
         app.popStyle();
     }
 }

@@ -26,13 +26,14 @@ public class ST_Zone implements Display {
     double depth;
     WB_Polygon innerPolygon;
     List<WB_Point> ctrlP;
-    int seed = 5;
+    int seed = 4;
     double divLengthTol = 300;
-    double minBuildingArea = 30000;
-    double roadWidth = 90;
+    double minBuildingArea = 20000;
+    double roadWidth = 80;
     double floorHeight = 30;
     double towerLength = 500;
     double towerDepth = 400;
+    double towerTol = 800;
     int maxGapNum = 2;
     List<WB_PolyLine> divLines;
     List<WB_Polygon> divPolygons;
@@ -51,11 +52,13 @@ public class ST_Zone implements Display {
     int podFloorNum;
 
 
-    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, PApplet applet) {
+    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, int gapNum, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.type = type;
+        setPara(boundary);
+        this.maxGapNum = gapNum;
         random = new Random(seed);
         this.boundary = boundary;
         this.redLineDis = redLineDis;
@@ -63,23 +66,25 @@ public class ST_Zone implements Display {
         this.depth = depth;
         this.outPolygon = getSingleBufferedPolygon(boundary, redLineDis - roadWidth * 0.5);
         this.innerPolygon = getSingleBufferedPolygon(outPolygon, depth + roadWidth);
-        this.ctrlP = getPtInPolygon(innerPolygon, maxGapNum);
+        this.ctrlP = getPtInPolygon(innerPolygon, gapNum);
         this.divLines = getDivLine(outPolygon, ctrlP);
         this.divPolygons = getDivPolygon(divLines);
         this.buildingBoundary = getBuildingBoundarys(divPolygons, roadWidth);
-        this.buildingVols = initialBuildingVol(buildingBoundary, podFloorNum, 0);
+        this.buildingVols = initialBuildingVol(buildingBoundary, this.podFloorNum, 0);
         this.greenBoundary = getSingleBufferedPolygon(innerPolygon, greenDis - roadWidth);
         this.roads = getRoads(greenBoundary, 300);
-        this.green = new Green(greenBoundary, roads, 30, 500, app);
+        this.green = new Green(greenBoundary, roads, 15, 500, app);
 
     }
 
-    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, double towerLength, double towerDepth, int towerFloorNum, PApplet applet) {
+    public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, double towerLength, double towerDepth, int towerFloorNum, int gapNum, PApplet applet) {
         this.app = applet;
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.type = type;
+        setTowerPara(boundary);
         random = new Random(seed);
+        this.maxGapNum = gapNum;
         this.boundary = boundary;
         this.redLineDis = redLineDis;
         this.redLine = getSingleBufferedPolygon(boundary, redLineDis);
@@ -96,9 +101,43 @@ public class ST_Zone implements Display {
         this.green = new Green(greenBoundary, roads, 30, 500, app);
         this.towerLength = towerLength;
         this.towerDepth = towerDepth;
-        this.towersBoundaryRaw = getTowerBoundary(redLine, 800, towerDepth, towerLength);
+        this.towersBoundaryRaw = getTowerBoundary(redLine, towerTol, towerDepth, towerLength);
         this.towersBoundaryCut = cutTower(towersBoundaryRaw, buildingBoundary);
         this.towerVols = initialBuildingVol(towersBoundaryCut, towerFloorNum, 0);
+    }
+
+
+    public void setPara(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 500000) {
+            depth = 100;
+            roadWidth = 50;
+            minBuildingArea = 13000;
+            podFloorNum = 4;
+        } else if (area < 800000 && area >= 500000) {
+            depth = 150;
+            roadWidth = 50;
+            minBuildingArea = 18000;
+            podFloorNum = 6;
+        } else {
+            depth = 200;
+            roadWidth = 80;
+            minBuildingArea = 20000;
+            podFloorNum = 8;
+        }
+    }
+
+    public void setTowerPara(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 800000) {
+            depth = 200;
+            towerLength = 300;
+            towerDepth = 250;
+            towerTol = 600;
+        } else if (area >= 80000 && area < 1100000) {
+            depth = 250;
+            towerTol = 700;
+        }
     }
 
 
@@ -336,7 +375,7 @@ public class ST_Zone implements Display {
         for (WB_Polygon p : buildingBoundary) {
             wb_render.drawPolygonEdges(p);
         }
-        app.stroke(255, 0, 0);
+//        app.stroke(255, 0, 0);
 //        for (WB_Polygon p : divPolygons) {
 //            wb_render.drawPolygonEdges(p);
 //        }
@@ -350,8 +389,10 @@ public class ST_Zone implements Display {
             b.display();
         }
 
-        for (BuildingVol b : towerVols) {
-            b.display();
+        if (towerVols != null) {
+            for (BuildingVol b : towerVols) {
+                b.display();
+            }
         }
 
         green.display();
