@@ -30,7 +30,16 @@ public class Commercial implements Display {
     double depth = 170;
     double podMinWidth = 200;  //最小裙楼单元的宽度
     double roadRandom = 0.05;  //小路的个数
-    double buildingRandom = 0.20;
+    double buildingRandom = 0.22;  //原本
+
+
+//    //低参数
+//    double buildingRandom = 0.35;
+
+//    //高参数
+//    double buildingRandom = 0.0;
+
+
     double minBuildingArea = 20000;
     double minGreenArea = 5000;
     int roadNum = 4;
@@ -111,6 +120,8 @@ public class Commercial implements Display {
         }
 
     }
+
+
 
     public List<BuildingVol> initialBuildingVol() {
         List<BuildingVol> buildingVols = new ArrayList<>();

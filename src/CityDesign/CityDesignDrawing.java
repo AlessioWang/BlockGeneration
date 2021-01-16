@@ -57,9 +57,9 @@ public class CityDesignDrawing extends PApplet {
 
     public void settings() {
 //        size(2000, 1300, P3D);
-//        size(1000, 1000, P3D);
+        size(1000, 1000, P3D);
 //        size(3000, 2500, P3D);
-        size(3000, 3000, P3D);
+//        size(3000, 3000, P3D);  //平面
 
     }
 
@@ -67,39 +67,36 @@ public class CityDesignDrawing extends PApplet {
         guoCam = new CameraController(this, 3000);
         guoCam.getCamera().setFovy(1.2);
 
-//        //城市轴侧
-//        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
-//        guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
-//        guoCam.getCamera().setPerspective(false);
+        //城市轴侧
+        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
+        guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
+        guoCam.getCamera().setPerspective(false);
 
         //城市平面
 //        guoCam.getCamera().setPosition(new Vec_Guo(3341.3800184820616, -10204.963217799872, 30192.211771405455));
 //        guoCam.getCamera().setLookAt(new Vec_Guo(3226.5860963914706, -7923.1344152791935, 56.997177471821175));
 //        guoCam.getCamera().setPerspective(true);
 
-//        //局部平面
-//        guoCam.getCamera().setPosition(new Vec_Guo( -506.549193444732, 6719.93329345324, 15144.187793852758));
-//        guoCam.getCamera().setLookAt(new Vec_Guo( -493.5678041621799, 4653.908209161626, -455.73766966108644));
-//        guoCam.getCamera().setPerspective(false);
 
-//        //局部轴侧
+
+////        局部轴侧
 //        guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
 //        guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
 //        guoCam.getCamera().setPerspective(false);
 
-        //局部轴侧
-        guoCam.getCamera().setPosition(new Vec_Guo(654.1434069102174, 10073.001312550077, 14602.378231382067));
-        guoCam.getCamera().setLookAt(new Vec_Guo( 1015.7522037062921, 7018.0563993559, -862.5148746319613));
-        guoCam.getCamera().setPerspective(false);
+//        //局部平面
+//        guoCam.getCamera().setPosition(new Vec_Guo(654.1434069102174, 10073.001312550077, 14602.378231382067));
+//        guoCam.getCamera().setLookAt(new Vec_Guo( 1015.7522037062921, 7018.0563993559, -862.5148746319613));
+//        guoCam.getCamera().setPerspective(false);
 
         render = new WB_Render(this);
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);   //中强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\diqiangduCityDesignDrawing.dxf", UTF_8);   //低强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\highBlock.dxf", UTF_8);   //高强度街区
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
 
 
-//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
 
         allBoundary = dxfImporter.getPolyLines("0edge");
         blocksAxis = dxfImporter.getPolyLines("3_blocksaxis");
@@ -128,7 +125,7 @@ public class CityDesignDrawing extends PApplet {
 
         for (int i = 0; i < residentTest.size(); i++) {
             WB_Polygon p = W_Tools.polygonFaceDown(residentTest.get(i));
-            Residence residence = new Residence(p, 80, 550, 150, 0.8, 30, 90, 12, this);
+            Residence residence = new Residence(p, 80, 550, 150, 0.8, 30, 120, 12, this);
             residenceList.add(residence);
         }
 
@@ -140,13 +137,13 @@ public class CityDesignDrawing extends PApplet {
 
         for (WB_Polygon p : towerBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 3, this);
+            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 6, this);
             towers.add(tower);
         }
 
         for (WB_Polygon p : stZoneBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 4, this);
+            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 5, this);
             stZones.add(zone);
         }
 

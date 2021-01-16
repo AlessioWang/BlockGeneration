@@ -59,6 +59,10 @@ public class ST_Zone implements Display {
         gf = new WB_GeometryFactory();
         this.type = type;
         setPara(boundary);
+
+//        setParaLow(boundary);   //低参数
+
+//        setParaHigh(boundary);  //高参数
         this.maxGapNum = gapNum;
         random = new Random(seed);
         this.boundary = boundary;
@@ -83,7 +87,9 @@ public class ST_Zone implements Display {
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.type = type;
-        setTowerPara(boundary);
+        setTowerPara(boundary);  //origin
+
+//        setTowerParaLow(boundary);   //低参数
         random = new Random(seed);
         this.maxGapNum = gapNum;
         this.boundary = boundary;
@@ -104,7 +110,7 @@ public class ST_Zone implements Display {
         this.towerDepth = towerDepth;
         this.towersBoundaryRaw = getTowerBoundary(redLine, towerTol, towerDepth, towerLength);
         this.towersBoundaryCut = cutTower(towersBoundaryRaw, buildingBoundary);
-        this.towerVols = initialBuildingVol(towersBoundaryCut, this.towerNum+ random.nextInt(8), 0);
+        this.towerVols = initialBuildingVol(towersBoundaryCut, this.towerNum + random.nextInt(10), 0);
     }
 
 
@@ -125,6 +131,65 @@ public class ST_Zone implements Display {
             roadWidth = 80;
             minBuildingArea = 22000;
             podFloorNum = 8;
+        }
+    }
+
+    public void setParaLow(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 500000) {
+            depth = 100;
+            roadWidth = 50;
+            minBuildingArea = 20000;
+            podFloorNum = 3;
+        } else if (area < 800000 && area >= 500000) {
+            depth = 150;
+            roadWidth = 50;
+            minBuildingArea = 23000;
+            podFloorNum = 4;
+        } else {
+            depth = 200;
+            roadWidth = 80;
+            minBuildingArea = 30000;
+            podFloorNum = 6;
+        }
+    }
+
+    public void setParaHigh(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 500000) {
+            depth = 100;
+            roadWidth = 50;
+            minBuildingArea = 20000;
+            podFloorNum = 8;
+        } else if (area < 800000 && area >= 500000) {
+            depth = 150;
+            roadWidth = 50;
+            minBuildingArea = 23000;
+            podFloorNum = 12;
+        } else {
+            depth = 200;
+            roadWidth = 80;
+            minBuildingArea = 30000;
+            podFloorNum = 14;
+        }
+    }
+
+    public void setTowerParaLow(WB_Polygon b) {
+        double area = Math.abs(b.getSignedArea());
+        if (area < 800000) {
+            depth = 180;
+            towerLength = 250;
+            towerDepth = 200;
+            towerTol = 600;
+            towerNum = 20;
+        } else if (area >= 80000 && area < 1100000) {
+            depth = 200;
+            towerLength = 350;
+            towerDepth = 300;
+            towerTol = 700;
+            towerNum = 20;
+        } else {
+            towerNum = 25;
         }
     }
 
