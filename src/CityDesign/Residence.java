@@ -488,20 +488,18 @@ public class Residence implements Display {
     @Override
     public void display() {
         app.pushStyle();
+        app.stroke(10,50);
+        app.strokeWeight(1);
         app.noFill();
-        app.stroke(255, 0, 0);
-        app.strokeWeight(2);
         wb_render.drawPolygonEdges(this.redLine);
-        app.stroke(100, 0, 0, 50);
+        app.noStroke();
 
         //画控制线
-        for (WB_PolyLine l : this.controlLines) {
-            wb_render.drawPolyLine(l);
-        }
+//        for (WB_PolyLine l : this.controlLines) {
+//            wb_render.drawPolyLine(l);
+//        }
 
         //画点
-        app.noStroke();
-        app.fill(0, 0, 100);
 
         for (ResidenceBuilding building : residenceBuildings) {
             building.display();

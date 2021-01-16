@@ -66,10 +66,10 @@ public class CityDesignTest extends PApplet {
 //        residence.display();  //显示住宅
 //        boundary.display();   //住宅的boundary
 //-----------显示商业-----------------
-//        commercialBoundary.display();
-//        commercial.display();
+        commercialBoundary.display();
+        commercial.display();
 //-----------显示科技园区-----------------
-        st_zone.display();
+//        st_zone.display();
 //        st_zoneWithTower.display();
     }
 

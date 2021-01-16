@@ -87,21 +87,20 @@ public class BuildingVol implements Display {
         List<WB_Polygon> vols = new ArrayList<>();
         WB_Polygon rawRoof = getRoof(outline);
         List<WB_Coord> roofPoints = rawRoof.getPoints().toList();
-        roofPoints.remove(roofPoints.get(roofPoints.size()-1));
+        roofPoints.remove(roofPoints.get(roofPoints.size() - 1));
         List<WB_Coord> outLinePoints = outline.getPoints().toList();
-        for (int i = 0; i <roofPoints.size(); i++) {
+        for (int i = 0; i < roofPoints.size(); i++) {
             for (int j = 0; j < outLinePoints.size(); j++) {
                 WB_Point pr = (WB_Point) roofPoints.get(i);
                 WB_Point prn = (WB_Point) roofPoints.get((i + 1) % roofPoints.size());
-                WB_Point prL = (WB_Point) roofPoints.get(roofPoints.size()-1);
+                WB_Point prL = (WB_Point) roofPoints.get(roofPoints.size() - 1);
                 WB_Point po = (WB_Point) outLinePoints.get(j);
                 WB_Point pon = (WB_Point) outLinePoints.get((j + 1) % outLinePoints.size());
                 if (i == j) {
-                    WB_Polygon wall = new WB_Polygon(po, pon, prn, pr);
+                    WB_Polygon wall = new WB_Polygon(po, pon, prn, pr, po);
                     vols.add(wall);
-                }
-                else {
-                    WB_Polygon wall = new WB_Polygon(po, pon, prL);
+                } else {
+                    WB_Polygon wall = new WB_Polygon(po, pon, prL, po);
                     vols.add(wall);
                 }
             }
@@ -120,7 +119,7 @@ public class BuildingVol implements Display {
             WB_Point p1 = new WB_Point(seg.getEndpoint());
             WB_Point p2 = p1.add(v);
             WB_Point p3 = p0.add(v);
-            WB_Polygon polygon = new WB_Polygon(p0, p1, p2, p3);
+            WB_Polygon polygon = new WB_Polygon(p0, p1, p2, p3, p0);
             allWalls.add(polygon);
         }
         return allWalls;
@@ -152,6 +151,7 @@ public class BuildingVol implements Display {
             pt = pt.add(v);
             pts.add(pt);
         }
+        pts.add(pts.get(0));
         return new WB_Polygon(pts);
     }
 
@@ -159,17 +159,21 @@ public class BuildingVol implements Display {
     public void display() {
         app.pushStyle();
         app.strokeWeight(1);
-        app.fill(150,95);
+        app.noStroke();
         if (this.dis == 0) {
             wb_render.drawPolygon(outline);
+            app.fill(220);
+
             for (WB_Polygon p : walls) {
                 wb_render.drawPolygonEdges(p);
             }
-            app.fill(10, 10, 100);
-            for (WB_Polygon p : floors) {
-                wb_render.drawPolygonEdges(p);
-            }
-            app.fill(10, 100, 120);
+
+//            app.fill(10, 10, 100, 20);
+//            for (WB_Polygon p : floors) {
+//                wb_render.drawPolygonEdges(p);
+//            }
+
+            app.fill(200);
             wb_render.drawPolygonEdges(roof);
         }
         if (this.dis != 0) {

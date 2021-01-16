@@ -167,10 +167,10 @@ public class ResidenceBuilding implements Display {
         app.noFill();
         app.stroke(0, 0, 50, 70);
         app.strokeWeight(2);
-        wb_render.drawPolygonEdges(this.boundary);
-        wb_render.drawPoint(center, 10);
-        app.fill(255, 0, 0);
-        wb_render.drawPoint(cp, 7);
+//        wb_render.drawPolygonEdges(this.boundary);
+//        wb_render.drawPoint(center, 10);
+//        app.fill(255, 0, 0);
+//        wb_render.drawPoint(cp, 7);
 //        wb_render.drawPolylineEdges(line);
         app.popStyle();
         buildingVols.display();

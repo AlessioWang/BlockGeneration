@@ -140,7 +140,7 @@ public class Green implements Display {
 //    }
 
     private List<WB_Polygon> getDividedGreens() {
-        List<WB_Polygon>out = new ArrayList<>();
+        List<WB_Polygon> out = new ArrayList<>();
         List<WB_Polygon> allPolygons = new ArrayList<>();
         roadLines = W_Tools.getShortedPolylines(roadLines, 250);
         allPolygons = W_Tools.splitPolygonWithPolylineList(greenZone, roadLines);
@@ -173,14 +173,14 @@ public class Green implements Display {
     public void display() {
         app.pushStyle();
         app.noStroke();
-        app.fill(0, 120, 0, 70);
-        app.strokeWeight(2);
+//        app.fill(0, 120, 0, 70);
+//        app.strokeWeight(2);
 //        for (WB_Polygon polygon : basicPolygon) {
 //            wb_render.drawPolygonEdges(polygon);
 //        }
         app.noFill();
-        app.stroke(10, 150, 10);
-        app.fill(0, 255, 10, 50);
+        app.noStroke();
+        app.fill(100, 136, 72);
 //        for (WB_PolyLine l : roadLines) {
 //            wb_render.drawPolylineEdges(l);
 //        }

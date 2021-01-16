@@ -30,7 +30,7 @@ public class Commercial implements Display {
     double depth = 170;
     double podMinWidth = 200;  //最小裙楼单元的宽度
     double roadRandom = 0.05;  //小路的个数
-    double buildingRandom = 0.22;
+    double buildingRandom = 0.20;
     double minBuildingArea = 20000;
     double minGreenArea = 5000;
     int roadNum = 4;
@@ -76,37 +76,37 @@ public class Commercial implements Display {
             depth = 150;
             roadWidth = 17;
             minGreenArea = 2500;
-            minBuildingArea = 18000;
+            minBuildingArea = 15000;
             roadNum = 2;
         } else if (area >= 350000 && area < 55000) {
             depth = 160;
             roadWidth = 17;
             minGreenArea = 3000;
-            minBuildingArea = 18000;
+            minBuildingArea = 16000;
             roadNum = 3;
         } else if (area >= 550000 && area < 80000) {
             depth = 170;
             roadWidth = 18;
             minGreenArea = 3000;
-            minBuildingArea = 20000;
+            minBuildingArea = 16000;
             roadNum = 4;
         } else if (area >= 800000 && area < 110000) {
             depth = 180;
             roadWidth = 20;
             minGreenArea = 4000;
-            minBuildingArea = 20000;
+            minBuildingArea = 18000;
             roadNum = 5;
         } else if (area >= 110000 && area < 150000) {
             depth = 190;
             roadWidth = 20;
             minGreenArea = 4000;
-            minBuildingArea = 25000;
+            minBuildingArea = 20000;
             roadNum = 6;
         }else {
             depth = 200;
             roadWidth = 20;
             minGreenArea = 4000;
-            minBuildingArea = 30000;
+            minBuildingArea = 25000;
             roadNum = 7;
         }
 
@@ -243,7 +243,7 @@ public class Commercial implements Display {
         app.noFill();
         app.stroke(255, 0, 0);
         app.strokeWeight(1);
-        wb_render.drawPolygonEdges(redLine);
+//        wb_render.drawPolygonEdges(redLine);
         app.stroke(0, 0, 150);
 //        wb_render.drawPolygonEdges(originRing);
 //        for (WB_Point p : controlP) {

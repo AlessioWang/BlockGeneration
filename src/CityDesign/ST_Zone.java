@@ -33,7 +33,7 @@ public class ST_Zone implements Display {
     double floorHeight = 30;
     double towerLength = 500;
     double towerDepth = 400;
-    double towerTol = 800;
+    double towerTol = 600;
     int maxGapNum = 2;
     List<WB_PolyLine> divLines;
     List<WB_Polygon> divPolygons;
@@ -50,6 +50,7 @@ public class ST_Zone implements Display {
     List<WB_Polygon> towersBoundaryCut = new ArrayList<>();
     List<BuildingVol> towerVols;
     int podFloorNum;
+    int towerNum;
 
 
     public ST_Zone(WB_Polygon boundary, double redLineDis, double depth, int podFloorNum, int gapNum, PApplet applet) {
@@ -103,7 +104,7 @@ public class ST_Zone implements Display {
         this.towerDepth = towerDepth;
         this.towersBoundaryRaw = getTowerBoundary(redLine, towerTol, towerDepth, towerLength);
         this.towersBoundaryCut = cutTower(towersBoundaryRaw, buildingBoundary);
-        this.towerVols = initialBuildingVol(towersBoundaryCut, towerFloorNum, 0);
+        this.towerVols = initialBuildingVol(towersBoundaryCut, this.towerNum+ random.nextInt(8), 0);
     }
 
 
@@ -112,17 +113,17 @@ public class ST_Zone implements Display {
         if (area < 500000) {
             depth = 100;
             roadWidth = 50;
-            minBuildingArea = 13000;
+            minBuildingArea = 18000;
             podFloorNum = 4;
         } else if (area < 800000 && area >= 500000) {
             depth = 150;
             roadWidth = 50;
-            minBuildingArea = 18000;
+            minBuildingArea = 20000;
             podFloorNum = 6;
         } else {
             depth = 200;
             roadWidth = 80;
-            minBuildingArea = 20000;
+            minBuildingArea = 22000;
             podFloorNum = 8;
         }
     }
@@ -134,9 +135,15 @@ public class ST_Zone implements Display {
             towerLength = 300;
             towerDepth = 250;
             towerTol = 600;
+            towerNum = 15;
         } else if (area >= 80000 && area < 1100000) {
-            depth = 250;
+            depth = 270;
+            towerLength = 350;
+            towerDepth = 300;
             towerTol = 700;
+            towerNum = 20;
+        } else {
+            towerNum = 25;
         }
     }
 
@@ -338,23 +345,27 @@ public class ST_Zone implements Display {
             }
         }
 
-//        for(WB_Polygon p : towers){
-//            List<WB_Polygon> plygs = W_Tools.selPolygonsInRingByPoint0(p,polygons);
-//            selPolygons.addAll(plygs);
-//        }
-
         //筛选面积
         List<WB_Polygon> out = new ArrayList<>();
         for (WB_Polygon b : selPolygons) {
-            if (Math.abs(b.getSignedArea()) > 100000) {
+            if (Math.abs(b.getSignedArea()) > 120000) {
 //                System.out.println("Area :" + Math.abs(b.getSignedArea()));
                 WB_Polygon sc = gf.createBufferedPolygons(b, -towerBufferDis).get(0);
                 out.add(sc);
             }
         }
 
+        //随机塔楼数量
+        List<WB_Polygon> realSel = new ArrayList<>();
+        int num = out.size();
+        if (num > 0) {
+            int n = random.nextInt(num) + 1;
+            for (int i = 0; i < n; i++) {
+                realSel.add(out.get(i));
+            }
+        }
 
-        return out;
+        return realSel;
     }
 
 
@@ -363,15 +374,21 @@ public class ST_Zone implements Display {
         app.pushStyle();
         app.noFill();
         app.strokeWeight(2);
-        app.stroke(0, 0, 150);
-        wb_render.drawPolygonEdges(outPolygon);
-        wb_render.drawPolygonEdges(innerPolygon);
-        for (WB_Point p : ctrlP) {
-            wb_render.drawPoint(p, 10);
-        }
+        app.noStroke();
+
+//        wb_render.drawPolygonEdges(outPolygon);
+//        wb_render.drawPolygonEdges(innerPolygon);
+
+//        //控制点
+//        for (WB_Point p : ctrlP) {
+//            wb_render.drawPoint(p, 10);
+//        }
+
+
         for (WB_PolyLine p : roads) {
             wb_render.drawPolylineEdges(p);
         }
+
         for (WB_Polygon p : buildingBoundary) {
             wb_render.drawPolygonEdges(p);
         }
@@ -379,8 +396,10 @@ public class ST_Zone implements Display {
 //        for (WB_Polygon p : divPolygons) {
 //            wb_render.drawPolygonEdges(p);
 //        }
-        wb_render.drawPolygonEdges(redLine);
+
+//        wb_render.drawPolygonEdges(redLine);
         app.fill(10, 150, 100);
+
         for (WB_Polygon p : towersBoundaryCut) {
             wb_render.drawPolygonEdges(p);
         }
