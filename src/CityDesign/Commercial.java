@@ -253,9 +253,11 @@ public class Commercial implements Display {
 //            wb_render.drawPoint(p, 5);
 //        }
 //        app.fill(0, 0, 100, 50);
-        for (WB_Polygon p : buildingBoundarys) {
-            wb_render.drawPolygonEdges(p);
-        }
+
+//        for (WB_Polygon p : buildingBoundarys) {
+//            wb_render.drawPolygonEdges(p);
+//        }
+
         app.fill(0, 120, 0, 30);
         green.display();
         for (BuildingVol bvl : buildingVols) {

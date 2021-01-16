@@ -4,6 +4,7 @@ import DxfReader.DXFImporter;
 import Tools.Exporter;
 import Tools.W_Tools;
 import gzf.gui.CameraController;
+import gzf.gui.Vec_Guo;
 import processing.core.PApplet;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
@@ -55,16 +56,51 @@ public class CityDesignDrawing extends PApplet {
 
 
     public void settings() {
-        size(1000, 1000, P3D);
+//        size(2000, 1300, P3D);
+//        size(1000, 1000, P3D);
+//        size(3000, 2500, P3D);
+        size(3000, 3000, P3D);
 
     }
 
     public void setup() {
         guoCam = new CameraController(this, 3000);
+        guoCam.getCamera().setFovy(1.2);
+
+//        //城市轴侧
+//        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
+//        guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
+//        guoCam.getCamera().setPerspective(false);
+
+        //城市平面
+//        guoCam.getCamera().setPosition(new Vec_Guo(3341.3800184820616, -10204.963217799872, 30192.211771405455));
+//        guoCam.getCamera().setLookAt(new Vec_Guo(3226.5860963914706, -7923.1344152791935, 56.997177471821175));
+//        guoCam.getCamera().setPerspective(true);
+
+//        //局部平面
+//        guoCam.getCamera().setPosition(new Vec_Guo( -506.549193444732, 6719.93329345324, 15144.187793852758));
+//        guoCam.getCamera().setLookAt(new Vec_Guo( -493.5678041621799, 4653.908209161626, -455.73766966108644));
+//        guoCam.getCamera().setPerspective(false);
+
+//        //局部轴侧
+//        guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
+//        guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
+//        guoCam.getCamera().setPerspective(false);
+
+        //局部轴侧
+        guoCam.getCamera().setPosition(new Vec_Guo(654.1434069102174, 10073.001312550077, 14602.378231382067));
+        guoCam.getCamera().setLookAt(new Vec_Guo( 1015.7522037062921, 7018.0563993559, -862.5148746319613));
+        guoCam.getCamera().setPerspective(false);
+
         render = new WB_Render(this);
-        //        commercialPolygon = dxfImporter.getPolygons("test");
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);   //中强度街区
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\diqiangduCityDesignDrawing.dxf", UTF_8);   //低强度街区
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\highBlock.dxf", UTF_8);   //高强度街区
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
+
+
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
+
         allBoundary = dxfImporter.getPolyLines("0edge");
         blocksAxis = dxfImporter.getPolyLines("3_blocksaxis");
         lake = dxfImporter.getPolygons("0lake");
@@ -117,10 +153,12 @@ public class CityDesignDrawing extends PApplet {
     }
 
     public void draw() {
-        background(255);
+//        background(255);
+        background(220);
+
 //        lights();
         ambientLight(180, 180, 180);
-        directionalLight(150, 150, 150, 0.3f, 0.5f, -0.6f);
+        directionalLight(150, 150, 150, -0.1f, 0.4f, -0.6f);
 
         //地块总边界
         pushStyle();
@@ -141,8 +179,8 @@ public class CityDesignDrawing extends PApplet {
         //水体
         fill(85, 149, 159);
         stroke(85, 149, 159);
-        for (WB_PolyLine p : lake) {
-            render.drawPolylineEdges(p);
+        for (WB_Polygon p : lake) {
+            render.drawPolygonEdges(p);
         }
         for (WB_Polygon p : river) {
             render.drawPolygonEdges(p);
@@ -181,7 +219,7 @@ public class CityDesignDrawing extends PApplet {
             render.drawPolylineEdges(p);
         }
 
-        fill(181, 85, 94,50);
+        fill(181, 85, 94, 50);
         noStroke();
         for (WB_Polygon p : publicPlace) {
             render.drawPolygonEdges(p);
@@ -302,9 +340,16 @@ public class CityDesignDrawing extends PApplet {
 
             e.save("E:\\INST.AAA\\Term-1\\iGeoExport\\pointResidence.3dm");
         }
+        if (keyPressed && key == 'a') {
+            System.out.println("position " + guoCam.getCamera().getPosition());
+            System.out.println("lookAt " + guoCam.getCamera().getLookAt());
+            System.out.println("view " + guoCam.getCamera().getFovy());
+        }
+
+        if (keyPressed && key == 'w') {
+            saveFrame("E:\\INST.AAA\\Term-1\\saveFrame\\outPut\\pic-######.png");
+        }
 
 
     }
-
-
 }
