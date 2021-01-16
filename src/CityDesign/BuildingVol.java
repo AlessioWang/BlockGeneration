@@ -113,7 +113,7 @@ public class BuildingVol implements Display {
     public List<WB_Polygon> getWalls() {
         List<WB_Polygon> allWalls = new ArrayList<>();
         List<WB_Segment> segments = outline.toSegments();
-        WB_Vector v = new WB_Vector(0, 0, floorHeight * floorNum);
+        WB_Vector v = new WB_Vector(0, 0, floorHeight * floorNum+15);
         for (WB_Segment seg : segments) {
             WB_Point p0 = new WB_Point(seg.getOrigin());
             WB_Point p1 = new WB_Point(seg.getEndpoint());
@@ -162,7 +162,7 @@ public class BuildingVol implements Display {
         app.noStroke();
         if (this.dis == 0) {
             wb_render.drawPolygon(outline);
-            app.fill(220);
+            app.fill(153, 157, 174);
 
             for (WB_Polygon p : walls) {
                 wb_render.drawPolygonEdges(p);
@@ -173,7 +173,7 @@ public class BuildingVol implements Display {
 //                wb_render.drawPolygonEdges(p);
 //            }
 
-            app.fill(200);
+            app.fill(217, 245, 241);
             wb_render.drawPolygonEdges(roof);
         }
         if (this.dis != 0) {

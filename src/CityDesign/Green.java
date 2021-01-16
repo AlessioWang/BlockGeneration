@@ -178,9 +178,9 @@ public class Green implements Display {
 //        for (WB_Polygon polygon : basicPolygon) {
 //            wb_render.drawPolygonEdges(polygon);
 //        }
-        app.noFill();
+
         app.noStroke();
-        app.fill(100, 136, 72);
+        app.fill(174, 192, 167);
 //        for (WB_PolyLine l : roadLines) {
 //            wb_render.drawPolylineEdges(l);
 //        }

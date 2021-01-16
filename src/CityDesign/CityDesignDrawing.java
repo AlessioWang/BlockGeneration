@@ -42,7 +42,8 @@ public class CityDesignDrawing extends PApplet {
     List<WB_Polygon> pointResidenceBoundary = new ArrayList<>();
     List<WB_Polygon> publicPlace = new ArrayList<>();
     List<WB_Polygon> road = new ArrayList<>();
-
+    List<WB_PolyLine> subRoad = new ArrayList<>();
+    List<WB_Polygon> greenRoad = new ArrayList<>();
     //建筑图元
     List<Commercial> commercialList = new ArrayList<>();
     List<Residence> residenceList = new ArrayList<>();
@@ -62,8 +63,8 @@ public class CityDesignDrawing extends PApplet {
         guoCam = new CameraController(this, 3000);
         render = new WB_Render(this);
         //        commercialPolygon = dxfImporter.getPolygons("test");
-//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
         allBoundary = dxfImporter.getPolyLines("0edge");
         blocksAxis = dxfImporter.getPolyLines("3_blocksaxis");
         lake = dxfImporter.getPolygons("0lake");
@@ -79,7 +80,8 @@ public class CityDesignDrawing extends PApplet {
         pointResidenceBoundary = dxfImporter.getPolygons("point");
         publicPlace = dxfImporter.getPolygons("3_public");
         road = dxfImporter.getPolygons("road");
-
+        subRoad = dxfImporter.getPolyLines("subRoad");
+        greenRoad = dxfImporter.getPolygons("green");
 
         for (int i = 0; i < commercialPolygon.size(); i++) {
             WB_Polygon p = W_Tools.polygonFaceDown(commercialPolygon.get(i));
@@ -118,18 +120,19 @@ public class CityDesignDrawing extends PApplet {
         background(255);
 //        lights();
         ambientLight(180, 180, 180);
-        directionalLight(150, 150, 150, 1, -1, -1);
+        directionalLight(150, 150, 150, 0.3f, 0.5f, -0.6f);
 
         //地块总边界
         pushStyle();
-        stroke(255, 0, 0);
-        strokeWeight(2);
-        for (WB_PolyLine p : allBoundary) {
-            render.drawPolylineEdges(p);
-        }
+
+//        stroke(255, 0, 0);
+//        strokeWeight(2);
+//        for (WB_PolyLine p : allBoundary) {
+//            render.drawPolylineEdges(p);
+//        }
 
         //地块轴线
-        stroke(100,50);
+        stroke(100, 50);
         strokeWeight(1);
         for (WB_PolyLine p : blocksAxis) {
             render.drawPolylineEdges(p);
@@ -145,16 +148,29 @@ public class CityDesignDrawing extends PApplet {
             render.drawPolygonEdges(p);
         }
 
-        stroke(200);
-        strokeWeight(13);
+        //路
+        stroke(220);
+        strokeWeight(10);
         for (WB_PolyLine p : roadCenter) {
             render.drawPolylineEdges(p);
         }
 
-        fill(139, 188, 104);
-        stroke(222, 197, 129);
+        stroke(230);
+        strokeWeight(5);
+        for (WB_PolyLine p : subRoad) {
+            render.drawPolylineEdges(p);
+        }
+
+        //草
+        fill(174, 192, 167);
+        stroke(246, 231, 200);
         strokeWeight(4);
         for (WB_Polygon p : landscape) {
+            render.drawPolygonEdges(p);
+        }
+        //外围草
+        noStroke();
+        for (WB_Polygon p : greenRoad) {
             render.drawPolygonEdges(p);
         }
 
@@ -165,16 +181,16 @@ public class CityDesignDrawing extends PApplet {
             render.drawPolylineEdges(p);
         }
 
-        fill(225, 208, 225);
+        fill(181, 85, 94,50);
         noStroke();
         for (WB_Polygon p : publicPlace) {
             render.drawPolygonEdges(p);
         }
 
-        fill(255, 226, 148);
-        for (WB_Polygon p : road) {
-            render.drawPolygonEdges(p);
-        }
+//        fill(255, 226, 148);
+//        for (WB_Polygon p : road) {
+//            render.drawPolygonEdges(p);
+//        }
 
         popStyle();
 
@@ -225,7 +241,7 @@ public class CityDesignDrawing extends PApplet {
 //                    towerSave.addAll(b.floors);
                     podSave.add(b.roof);
                 }
-                for(BuildingVol b: c.towerVols){
+                for (BuildingVol b : c.towerVols) {
                     towerSave.addAll(b.walls);
                     towerSave.add(b.roof);
                 }
@@ -272,7 +288,6 @@ public class CityDesignDrawing extends PApplet {
             System.out.println("%%%%%%%" + pointResidences.size());
 
 
-
 //            e.savePolygons(commercialSave, "commerical");
 //            e.savePolygons(towerSave, "tower");
 //            e.savePolygons(podSave, "pod");
@@ -281,8 +296,8 @@ public class CityDesignDrawing extends PApplet {
 //            e.savePolygons(greenSave, "green");
 //            e.savePolygons(allBoundary, "boundary");
 //            e.WB_PolyLineToICurve(allBoundary.get(0));
-            e.savePolygons(pointSave,"point");
-            e.savePolygons(pointGreenSave,"pointGreen");
+            e.savePolygons(pointSave, "point");
+            e.savePolygons(pointGreenSave, "pointGreen");
 
 
             e.save("E:\\INST.AAA\\Term-1\\iGeoExport\\pointResidence.3dm");

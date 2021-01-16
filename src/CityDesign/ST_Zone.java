@@ -45,7 +45,7 @@ public class ST_Zone implements Display {
     List<WB_PolyLine> roads;
     Green green;
     int type;
-    double towerBufferDis = 0;
+    double towerBufferDis = 20;
     List<WB_Polygon> towersBoundaryRaw = new ArrayList<>();
     List<WB_Polygon> towersBoundaryCut = new ArrayList<>();
     List<BuildingVol> towerVols;
