@@ -125,7 +125,7 @@ public class CityDesignDrawing extends PApplet {
 
         for (int i = 0; i < residentTest.size(); i++) {
             WB_Polygon p = W_Tools.polygonFaceDown(residentTest.get(i));
-            Residence residence = new Residence(p, 80, 550, 150, 0.8, 30, 120, 12, this);
+            Residence residence = new Residence(p, 80, 550, 150, 0.8, 30, 90, 12, this);
             residenceList.add(residence);
         }
 
@@ -137,21 +137,21 @@ public class CityDesignDrawing extends PApplet {
 
         for (WB_Polygon p : towerBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 6, this);
+            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 3, this);
             towers.add(tower);
         }
 
         for (WB_Polygon p : stZoneBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 5, this);
+            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 4, this);
             stZones.add(zone);
         }
 
     }
 
     public void draw() {
-//        background(255);
-        background(220);
+        background(255);
+//        background(220);
 
 //        lights();
         ambientLight(180, 180, 180);
