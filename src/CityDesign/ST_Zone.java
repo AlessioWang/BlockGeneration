@@ -58,9 +58,9 @@ public class ST_Zone implements Display {
         wb_render = new WB_Render(applet);
         gf = new WB_GeometryFactory();
         this.type = type;
-        setPara(boundary);
+//        setPara(boundary);
 
-//        setParaLow(boundary);   //低参数
+        setParaLow(boundary);   //低参数
 
 //        setParaHigh(boundary);  //高参数
         this.maxGapNum = gapNum;
@@ -90,6 +90,7 @@ public class ST_Zone implements Display {
         setTowerPara(boundary);  //origin
 
 //        setTowerParaLow(boundary);   //低参数
+//        setTowerParaHigh(boundary);
         random = new Random(seed);
         this.maxGapNum = gapNum;
         this.boundary = boundary;
@@ -174,22 +175,22 @@ public class ST_Zone implements Display {
         }
     }
 
-    public void setTowerParaLow(WB_Polygon b) {
+    public void setTowerParaHigh(WB_Polygon b) {
         double area = Math.abs(b.getSignedArea());
         if (area < 800000) {
             depth = 180;
             towerLength = 250;
             towerDepth = 200;
             towerTol = 600;
-            towerNum = 20;
+            towerNum = 17;
         } else if (area >= 80000 && area < 1100000) {
             depth = 200;
             towerLength = 350;
             towerDepth = 300;
             towerTol = 700;
-            towerNum = 20;
-        } else {
             towerNum = 25;
+        } else {
+            towerNum = 30;
         }
     }
 

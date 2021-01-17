@@ -30,11 +30,11 @@ public class Commercial implements Display {
     double depth = 170;
     double podMinWidth = 200;  //最小裙楼单元的宽度
     double roadRandom = 0.05;  //小路的个数
-    double buildingRandom = 0.22;  //原本
+//    double buildingRandom = 0.22;  //原本
 
 
 //    //低参数
-//    double buildingRandom = 0.35;
+    double buildingRandom = 0.30;
 
 //    //高参数
 //    double buildingRandom = 0.0;

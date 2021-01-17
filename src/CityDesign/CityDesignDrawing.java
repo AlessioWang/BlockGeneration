@@ -56,10 +56,11 @@ public class CityDesignDrawing extends PApplet {
 
 
     public void settings() {
-//        size(2000, 1300, P3D);
-        size(1000, 1000, P3D);
+        size(1500, 1000, P3D);
+//        size(3500, 2000, P3D);  //城市轴侧
+//        size(2000, 2500, P3D);    //竖平面
 //        size(3000, 2500, P3D);
-//        size(3000, 3000, P3D);  //平面
+//        size(2000, 3000, P3D);  //平面
 
     }
 
@@ -67,15 +68,15 @@ public class CityDesignDrawing extends PApplet {
         guoCam = new CameraController(this, 3000);
         guoCam.getCamera().setFovy(1.2);
 
-        //城市轴侧
-        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
-        guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
+        //城市平面
+        guoCam.getCamera().setPosition(new Vec_Guo(5154.196385771471, -9036.546300268086, 47589.27891514476));
+        guoCam.getCamera().setLookAt(new Vec_Guo(5154.196385771471, -9036.546300268086, 0.0));
         guoCam.getCamera().setPerspective(false);
 
-        //城市平面
-//        guoCam.getCamera().setPosition(new Vec_Guo(3341.3800184820616, -10204.963217799872, 30192.211771405455));
-//        guoCam.getCamera().setLookAt(new Vec_Guo(3226.5860963914706, -7923.1344152791935, 56.997177471821175));
-//        guoCam.getCamera().setPerspective(true);
+////        城市轴侧
+//        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
+//        guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
+//        guoCam.getCamera().setPerspective(false);
 
 
 
@@ -96,7 +97,9 @@ public class CityDesignDrawing extends PApplet {
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
 
 
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignHigh.dxf", UTF_8);
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignLow.dxf", UTF_8);
 
         allBoundary = dxfImporter.getPolyLines("0edge");
         blocksAxis = dxfImporter.getPolyLines("3_blocksaxis");
@@ -137,7 +140,7 @@ public class CityDesignDrawing extends PApplet {
 
         for (WB_Polygon p : towerBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 3, this);
+            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 4, this);
             towers.add(tower);
         }
 
