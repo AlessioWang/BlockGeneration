@@ -175,8 +175,12 @@ public class BuildingVol implements Display {
 //                wb_render.drawPolygonEdges(p);
 //            }
 
-//            app.fill(217, 245, 241);  //白色屋顶
-            app.fill(122, 125, 139);  //灰色屋顶
+            app.fill(217, 245, 241);  //白色屋顶
+//            app.fill(122, 125, 139);  //灰色屋顶
+
+//            app.strokeWeight(1);
+//            app.stroke(0);
+//            app.fill(100);  //黑色屋顶
             wb_render.drawPolygonEdges(roof);
         }
         if (this.dis != 0) {

@@ -34,10 +34,10 @@ public class Commercial implements Display {
 
 
 //    //低参数
-    double buildingRandom = 0.30;
+//    double buildingRandom = 0.35;
 
 //    //高参数
-//    double buildingRandom = 0.0;
+    double buildingRandom = 0.0;
 
 
     double minBuildingArea = 20000;

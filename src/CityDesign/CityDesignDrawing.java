@@ -56,10 +56,12 @@ public class CityDesignDrawing extends PApplet {
 
 
     public void settings() {
-        size(1500, 1000, P3D);
+        size(1920, 1080, P3D);
+
 //        size(3500, 2000, P3D);  //城市轴侧
 //        size(2000, 2500, P3D);    //竖平面
-//        size(3000, 2500, P3D);
+
+//        size(3000, 2500, P3D);  //局部轴侧
 //        size(2000, 3000, P3D);  //平面
 
     }
@@ -68,10 +70,11 @@ public class CityDesignDrawing extends PApplet {
         guoCam = new CameraController(this, 3000);
         guoCam.getCamera().setFovy(1.2);
 
-        //城市平面
-        guoCam.getCamera().setPosition(new Vec_Guo(5154.196385771471, -9036.546300268086, 47589.27891514476));
-        guoCam.getCamera().setLookAt(new Vec_Guo(5154.196385771471, -9036.546300268086, 0.0));
-        guoCam.getCamera().setPerspective(false);
+//        //城市平面
+//        guoCam.getCamera().setPosition(new Vec_Guo(5154.196385771471, -9036.546300268086, 47589.27891514476));
+//        guoCam.getCamera().setLookAt(new Vec_Guo(5154.196385771471, -9036.546300268086, 0.0));
+//        guoCam.getCamera().setPerspective(false);
+
 
 ////        城市轴侧
 //        guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
@@ -79,11 +82,10 @@ public class CityDesignDrawing extends PApplet {
 //        guoCam.getCamera().setPerspective(false);
 
 
-
 ////        局部轴侧
-//        guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
-//        guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
-//        guoCam.getCamera().setPerspective(false);
+        guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
+        guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
+        guoCam.getCamera().setPerspective(false);
 
 //        //局部平面
 //        guoCam.getCamera().setPosition(new Vec_Guo(654.1434069102174, 10073.001312550077, 14602.378231382067));
@@ -94,12 +96,12 @@ public class CityDesignDrawing extends PApplet {
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);   //中强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\diqiangduCityDesignDrawing.dxf", UTF_8);   //低强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\highBlock.dxf", UTF_8);   //高强度街区
-//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
 
 
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignHigh.dxf", UTF_8);
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignLow.dxf", UTF_8);
+//        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignLow.dxf", UTF_8);
 
         allBoundary = dxfImporter.getPolyLines("0edge");
         blocksAxis = dxfImporter.getPolyLines("3_blocksaxis");
@@ -146,7 +148,7 @@ public class CityDesignDrawing extends PApplet {
 
         for (WB_Polygon p : stZoneBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 4, this);
+            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 5, this);
             stZones.add(zone);
         }
 
@@ -177,7 +179,7 @@ public class CityDesignDrawing extends PApplet {
         }
 
         //水体
-        fill(85, 149, 159);
+        fill(85, 149, 159, 50);
         stroke(85, 149, 159);
         for (WB_Polygon p : lake) {
             render.drawPolygonEdges(p);
@@ -187,8 +189,11 @@ public class CityDesignDrawing extends PApplet {
         }
 
         //路
-        stroke(220);
-        strokeWeight(10);
+//        stroke(220);
+//        strokeWeight(10);
+
+        stroke(210);
+        strokeWeight(6);
         for (WB_PolyLine p : roadCenter) {
             render.drawPolylineEdges(p);
         }
@@ -224,6 +229,7 @@ public class CityDesignDrawing extends PApplet {
         for (WB_Polygon p : publicPlace) {
             render.drawPolygonEdges(p);
         }
+
 
 //        fill(255, 226, 148);
 //        for (WB_Polygon p : road) {
@@ -347,8 +353,41 @@ public class CityDesignDrawing extends PApplet {
         }
 
         if (keyPressed && key == 'w') {
-            saveFrame("E:\\INST.AAA\\Term-1\\saveFrame\\outPut\\pic-######.png");
+            saveFrame("E:\\INST.AAA\\Term-1\\saveFrame\\outPut\\new\\pic-######.png");
         }
+
+
+
+        //视角调整
+        //城市平面
+        if (keyPressed && key == '1') {
+            guoCam.getCamera().setPosition(new Vec_Guo(5154.196385771471, -9036.546300268086, 47589.27891514476));
+            guoCam.getCamera().setLookAt(new Vec_Guo(5154.196385771471, -9036.546300268086, 0.0));
+            guoCam.getCamera().setPerspective(false);
+        }
+
+        //城市轴侧
+        if (keyPressed && key == '2') {
+            guoCam.getCamera().setPosition(new Vec_Guo(-8791.772617944645, -20417.95198473546, 20808.232047125413));
+            guoCam.getCamera().setLookAt(new Vec_Guo(4765.655940529182, -7197.047596612056, 139.34128403086953));
+            guoCam.getCamera().setPerspective(false);
+        }
+
+        //局部平面
+        if (keyPressed && key == '3') {
+            guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
+            guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
+            guoCam.getCamera().setPerspective(false);
+        }
+
+        //局部轴侧
+        if (keyPressed && key == '4') {
+        guoCam.getCamera().setPosition(new Vec_Guo(654.1434069102174, 10073.001312550077, 14602.378231382067));
+        guoCam.getCamera().setLookAt(new Vec_Guo( 1015.7522037062921, 7018.0563993559, -862.5148746319613));
+        guoCam.getCamera().setPerspective(false);
+        }
+
+
 
 
     }

@@ -180,7 +180,11 @@ public class Green implements Display {
 //        }
 
         app.noStroke();
-        app.fill(174, 192, 167);
+        app.fill(174, 192, 167);   //原本
+//        app.fill(255);
+
+
+
 //        for (WB_PolyLine l : roadLines) {
 //            wb_render.drawPolylineEdges(l);
 //        }
