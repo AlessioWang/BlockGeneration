@@ -1,3 +1,5 @@
-# BlockGeneration
-## 地块生成程序
+# BlockGenerator 城市场地快速量型转化程序
+## 背景及简介
+## 依赖
+## 街区功能模块
 
