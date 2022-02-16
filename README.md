@@ -31,3 +31,8 @@
 ![城市轴侧](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E5%9F%8E%E5%B8%82%E8%BD%B4%E4%BE%A7.jpg?raw=true)
 ![城市平面](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E5%9F%8E%E5%B8%82%E5%B9%B3%E9%9D%A2.jpg?raw=true)
 ![街区轴侧.jpg](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E8%A1%97%E5%8C%BA%E8%BD%B4%E4%BE%A7.jpg?raw=true)
+
+## 6. TODO
+- 更多街区类型
+- GUI
+- 城市控制性指标参数直接转化到建筑形体
