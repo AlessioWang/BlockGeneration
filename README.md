@@ -16,9 +16,18 @@
 - IGeo
 
 ## 4. 现支持街区功能模块
-- 住宅 （Residence）
 - 商业（Commercial）
+  ![商业](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/commercial.jpg?raw=true)
+- 综合体（Commercial）
+  ![综合体](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/high.jpg?raw=true)
+- 住宅（Residence）
+  ![住宅](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/residence.jpg?raw=true)
 - 产业园（ST_Zone）
+  ![产业园](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/ST_Zone.jpg?raw=true)
 - 绿地（Green）
+- 硬地广场（Ground）
 
 ## 5. 成果展示
+![城市轴侧](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E5%9F%8E%E5%B8%82%E8%BD%B4%E4%BE%A7.jpg?raw=true)
+![城市平面](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E5%9F%8E%E5%B8%82%E5%B9%B3%E9%9D%A2.jpg?raw=true)
+![街区轴侧.jpg](https://github.com/AlessioWang/BlockGeneration/blob/e01a9f6cbad2107d236fb8e1cec1eb04db0f974e/src/Pics/%E8%A1%97%E5%8C%BA%E8%BD%B4%E4%BE%A7.jpg?raw=true)
