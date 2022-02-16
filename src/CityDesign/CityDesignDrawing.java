@@ -1,11 +1,14 @@
 package CityDesign;
 
+import Demo.MyImporter;
 import DxfReader.DXFImporter;
 import Tools.Exporter;
 import Tools.W_Tools;
 import gzf.gui.CameraController;
 import gzf.gui.Vec_Guo;
 import processing.core.PApplet;
+import wblut.geom.WB_Coord;
+import wblut.geom.WB_Point;
 import wblut.geom.WB_PolyLine;
 import wblut.geom.WB_Polygon;
 import wblut.processing.WB_Render;
@@ -28,6 +31,8 @@ public class CityDesignDrawing extends PApplet {
     WB_Render render;
 
     DXFImporter dxfImporter;
+
+
     List<WB_PolyLine> allBoundary = new ArrayList<>();
     List<WB_PolyLine> blocksAxis = new ArrayList<>();
     List<WB_PolyLine> roadCenter = new ArrayList<>();
@@ -45,6 +50,7 @@ public class CityDesignDrawing extends PApplet {
     List<WB_Polygon> road = new ArrayList<>();
     List<WB_PolyLine> subRoad = new ArrayList<>();
     List<WB_Polygon> greenRoad = new ArrayList<>();
+
     //建筑图元
     List<Commercial> commercialList = new ArrayList<>();
     List<Residence> residenceList = new ArrayList<>();
@@ -54,9 +60,19 @@ public class CityDesignDrawing extends PApplet {
 
     Exporter e = new Exporter();
 
+    MyImporter importer;
+
+    List<WB_Polygon> originLand;
+    List<WB_Polygon> green;
+    List<WB_Polygon> pod;
+    List<WB_Polygon> tower;
+
+    List<BuildingVol> podVol1 = new ArrayList<>();
+    List<BuildingVol> towerVol1 = new ArrayList<>();
+
 
     public void settings() {
-        size(1920, 1080, P3D);
+        size(1500, 1500, P3D);
 
 //        size(3500, 2000, P3D);  //城市轴侧
 //        size(2000, 2500, P3D);    //竖平面
@@ -66,9 +82,11 @@ public class CityDesignDrawing extends PApplet {
 
     }
 
+
     public void setup() {
         guoCam = new CameraController(this, 3000);
         guoCam.getCamera().setFovy(1.2);
+        importer = new MyImporter("E:\\INST.AAA\\Term-1\\CAD\\paperLowView.dxf");
 
 //        //城市平面
 //        guoCam.getCamera().setPosition(new Vec_Guo(5154.196385771471, -9036.546300268086, 47589.27891514476));
@@ -83,8 +101,8 @@ public class CityDesignDrawing extends PApplet {
 
 
 ////        局部轴侧
-        guoCam.getCamera().setPosition(new Vec_Guo(-9957.115801377406, 3104.091915149784, 9374.565487164631));
-        guoCam.getCamera().setLookAt(new Vec_Guo( -1692.9890207023645, 6316.174684313012, -676.8832383520505));
+        guoCam.getCamera().setPosition(new Vec_Guo(-11285.491455612022, 1845.9151618297778, 14786.324767495662));
+        guoCam.getCamera().setLookAt(new Vec_Guo( -395.9342379843291, 6078.444505928476, 223.9412963695952));
         guoCam.getCamera().setPerspective(false);
 
 //        //局部平面
@@ -96,7 +114,7 @@ public class CityDesignDrawing extends PApplet {
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesignDrawing.dxf", UTF_8);   //中强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\diqiangduCityDesignDrawing.dxf", UTF_8);   //低强度街区
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\highBlock.dxf", UTF_8);   //高强度街区
-        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\ultHighBlock.dxf", UTF_8);   //超高强度街区
+        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\paperLowView.dxf", UTF_8);   //超高强度街区
 
 
 //        dxfImporter = new DXFImporter("E:\\INST.AAA\\Term-1\\CAD\\CityDesign.dxf", UTF_8);
@@ -123,8 +141,7 @@ public class CityDesignDrawing extends PApplet {
 
         for (int i = 0; i < commercialPolygon.size(); i++) {
             WB_Polygon p = W_Tools.polygonFaceDown(commercialPolygon.get(i));
-//            System.out.println("index : " + i);
-            Commercial commercialSingle = new Commercial(p, 50, 300, 6, this);
+            Commercial commercialSingle = new Commercial(p, 50, 300, 5, this);
             commercialList.add(commercialSingle);
         }
 
@@ -140,19 +157,23 @@ public class CityDesignDrawing extends PApplet {
             pointResidences.add(residence);
         }
 
-        for (WB_Polygon p : towerBoundary) {
-            WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 4, this);
-            towers.add(tower);
-        }
+//        for (WB_Polygon p : towerBoundary) {
+//            WB_Polygon p1 = W_Tools.polygonFaceDown(p);
+//            ST_Zone tower = new ST_Zone(p1, 80, 300, 6, 500, 350, 23, 4, this);
+//            towers.add(tower);
+//        }
 
         for (WB_Polygon p : stZoneBoundary) {
             WB_Polygon p1 = W_Tools.polygonFaceDown(p);
-            ST_Zone zone = new ST_Zone(p1, 50, 160, 6, 5, this);
+            ST_Zone zone = new ST_Zone(p1, 50, 160, 1, 5, this);
             stZones.add(zone);
         }
 
+        iniElements();
+        iniBuildingVol();
     }
+
+
 
     public void draw() {
         background(255);
@@ -260,6 +281,20 @@ public class CityDesignDrawing extends PApplet {
             z.display();
         }
 
+
+        for (BuildingVol vol : podVol1) {
+            vol.display();
+        }
+
+        for (BuildingVol vol : towerVol1) {
+            vol.display();
+        }
+
+        //场地范围
+        landDrawing(originLand);
+
+        //草
+        greenDrawing(green);
     }
 
     public void keyPressed() {
@@ -387,8 +422,76 @@ public class CityDesignDrawing extends PApplet {
         guoCam.getCamera().setPerspective(false);
         }
 
-
-
+        if (keyPressed && key == 'b') {
+            saveFrame("E:\\INST.AAA\\paperPic\\pic-######.png");
+        }
 
     }
+
+    public void iniElements() {
+        originLand = importer.getOriginLand();
+        green = importer.getGreen();
+        pod = importer.getPod();
+        tower = importer.getTower();
+    }
+
+    public void iniBuildingVol() {
+        randomSeed(1);
+
+        for (WB_Polygon polygon : pod) {
+            podVol1.add(new BuildingNew(polygon, 40, 6-random(0,4), 0, this));
+        }
+
+        for (WB_Polygon polygon : tower) {
+            towerVol1.add(new BuildingNew(polygon, 40, (int)27-random(1,13), 0, this));
+        }
+
+    }
+
+    private List<WB_Polygon> moveLand(List<WB_Polygon> polygons, double dis) {
+        List<WB_Polygon> polys = new ArrayList<>();
+
+        for (WB_Polygon polygon : polygons) {
+            List<WB_Coord> coords = polygon.getPoints().toList();
+            List<WB_Point> pts = new ArrayList<>();
+
+            for (WB_Coord coord : coords) {
+                WB_Point p = new WB_Point(coord.xd(), coord.yd(), coord.zd() - dis);
+                pts.add(p);
+            }
+            polys.add(new WB_Polygon(pts));
+        }
+        return polys;
+    }
+
+
+    private void landDrawing(List<WB_Polygon> polygons) {
+        pushStyle();
+        fill(252, 227, 138, 30);
+        noStroke();
+        List<WB_Polygon> lands = moveLand(originLand, 2);
+        for (WB_Polygon p : lands) {
+            render.drawPolygon(p);
+        }
+
+        noFill();
+        stroke(217, 83, 79, 80);
+        strokeWeight(2);
+        for (WB_Polygon p : lands) {
+            render.drawPolygonEdges(p);
+        }
+        popStyle();
+    }
+
+    private void greenDrawing(List<WB_Polygon> polygons) {
+        pushStyle();
+        fill(157, 211, 168);
+        stroke(246, 231, 200);
+        strokeWeight(3);
+        for (WB_Polygon p : green) {
+            render.drawPolygonEdges(p);
+        }
+        popStyle();
+    }
+
 }

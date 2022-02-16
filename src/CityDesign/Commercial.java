@@ -28,7 +28,7 @@ public class Commercial implements Display {
     List<WB_Point> controlP;    //控制点
     double roadWidth = 20;
     double depth = 170;
-    double podMinWidth = 200;  //最小裙楼单元的宽度
+    double podMinWidth = 250;  //最小裙楼单元的宽度
     double roadRandom = 0.05;  //小路的个数
 //    double buildingRandom = 0.22;  //原本
 
@@ -37,10 +37,10 @@ public class Commercial implements Display {
 //    double buildingRandom = 0.35;
 
 //    //高参数
-    double buildingRandom = 0.0;
+    double buildingRandom = 0.15;
 
 
-    double minBuildingArea = 20000;
+    double minBuildingArea = 30000;
     double minGreenArea = 5000;
     int roadNum = 4;
     List<WB_PolyLine> divLine;

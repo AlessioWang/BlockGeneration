@@ -2,7 +2,6 @@ package CityDesign;
 
 import Block.Buildings;
 import Tools.W_Tools;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import processing.core.PApplet;
 import wblut.geom.*;
 import wblut.processing.WB_Render;

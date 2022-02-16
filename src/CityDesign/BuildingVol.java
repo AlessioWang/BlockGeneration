@@ -162,7 +162,7 @@ public class BuildingVol implements Display {
         app.noStroke();
         if (this.dis == 0) {
             wb_render.drawPolygon(outline);
-            app.fill(153, 157, 174);
+            app.fill(153, 157, 174,80);
 
 //            app.fill(193, 211, 249);
 
@@ -175,7 +175,7 @@ public class BuildingVol implements Display {
 //                wb_render.drawPolygonEdges(p);
 //            }
 
-            app.fill(217, 245, 241);  //白色屋顶
+            app.fill(217, 245, 241,90);  //白色屋顶
 //            app.fill(122, 125, 139);  //灰色屋顶
 
 //            app.strokeWeight(1);

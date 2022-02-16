@@ -245,7 +245,10 @@ public class ST_Zone implements Display {
 
     public WB_Polygon getSingleBufferedPolygon(WB_Polygon b, double dis) {
         List<WB_Polygon> list = gf.createBufferedPolygons(b, dis * (-1));
-        return list.get(0);
+        if(list != null){
+            return list.get(0);
+        }
+        return null;
     }
 
     public List<WB_Point> getPtInPolygon(WB_Polygon polygon, int maxNum) {
@@ -483,7 +486,7 @@ public class ST_Zone implements Display {
 //        }
 
 //        wb_render.drawPolygonEdges(redLine);
-        app.fill(10, 150, 100);
+//        app.fill(10, 150, 100);
 
         for (WB_Polygon p : towersBoundaryCut) {
             wb_render.drawPolygonEdges(p);
@@ -500,6 +503,7 @@ public class ST_Zone implements Display {
         }
 
         green.display();
+
         app.popStyle();
     }
 
